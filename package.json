@@ -1,0 +1,26 @@
+{
+  "name": "server",
+  "version": "0.0.1",
+  "description": "Server for UBTG",
+  "main": "server.js",
+  "scripts": {
+    "test": "test",
+    "dev": "nodemon server.js",
+    "prod": "node server.js",
+    "start": "node server.js"
+  },
+  "author": "Whisper GetWorkersDev",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/whisper612/ultra-balls-the-game.git"
+  },
+  "bugs": {
+    "url": "https://github.com/whisper612/ultra-balls-the-game/issues"
+  },
+  "homepage": "https://github.com/whisper612/ultra-balls-the-game#readme"
+}

@@ -1,0 +1,67 @@
+<!doctype HTML>
+<html>
+    <style>* {padding: 0; margin: 0} </style>
+    <head>
+        <meta charset="utf-8">
+        <title>Hello World</title>
+    </head>
+        <script src="pixi.min.js"></script>
+    <body>
+        <script type="text/javascript">
+            let type = "WebGL"
+            if (!PIXI.utils.isWebGLSupported()) {
+                type = "canvas"
+            }
+
+            // Alliases
+            let Application = PIXI.Application,
+                loader = PIXI.loader,
+                resources = PIXI.loader.resources,
+                Sprite = PIXI.Sprite;
+
+            // Create a Pixi Application
+            let app = new Application({
+                    width: 256, 
+                    height: 256,
+                    antialias: true,
+                    transparent: false,
+                    resolution: 1
+                }
+            );
+
+            // App settings
+            app.renderer.backgroundColor = 0x061639;
+            app.renderer.view.style.position = "absolute"
+            app.renderer.view.style.display = "block"
+            app.renderer.autoResize = true;
+            app.renderer.resize(window.innerWidth, window.innerHeight);
+
+            // Add the canvas that Pixi automatically created
+            document.body.appendChild(app.view);
+
+            // Load image and run the `setup` after
+            loader
+                .add([
+                    "assets/images/redBall.png",
+                    "assets/images/orangeBall.png",
+                    "assets/images/greenBall.png",
+                    "assets/images/dkBlueBall.png",
+                    "assets/images/blueBall.png",
+                    "assets/images/purpleBall.png"
+                ])
+                .load(setup);
+
+            function setup() {
+                // Create the balls sprites 
+                let redBallSprite = new PIXI.Sprite(resources["assets/images/redBall.png"].texture);
+                let orangeBallSprite = new PIXI.Sprite(resources["assets/images/orangeBall.png"].texture);
+                let greenBallSprite = new PIXI.Sprite(resources["assets/images/greenBall.png"].texture);
+                let dkBlueBallSprite = new PIXI.Sprite(resources["assets/images/dkBlueBall.png"].texture);
+                let blueBallSprite = new PIXI.Sprite(resources["assets/images/blueBall.png"].texture);
+                let purpleBallSprite = new PIXI.Sprite(resources["assets/images/purpleBall.png"].texture);
+                // Add the red ball to the stage
+                app.stage.addChild(redBallSprite);
+            }
+        </script>
+    </body>
+</html>
