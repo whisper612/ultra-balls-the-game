@@ -14,8 +14,16 @@ app.get('/pixi', (req, res) => {
     res.sendFile('pixi.html', { root: 'resources/'});
 });
 
-app.get('/pixi.min.js', (req, res) => {
-    res.sendFile('pixi.min.js', { root: 'resources/' });
+app.get('/scripts/pixi.min.js', (req, res) => {
+    res.sendFile('pixi.min.js', { root: 'resources/scripts' });
+});
+
+app.get('/scripts/main.js', (req, res) => {
+    res.sendFile('main.js', { root: 'resources/scripts' });
+});
+
+app.get('/assets/images/background.png', (req, res) => {
+    res.sendFile('background.png', { root: 'resources/assets/images/' });
 });
 
 app.get('/assets/images/redBall.png', (req, res) => {
