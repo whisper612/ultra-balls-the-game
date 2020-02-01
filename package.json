@@ -12,7 +12,8 @@
   "author": "Whisper GetWorkersDev",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "typescript": "^3.7.5"
   },
   "devDependencies": {},
   "repository": {

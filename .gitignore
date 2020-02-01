@@ -1,4 +1,6 @@
 # dependencies
-/client/node_modules
+/resources/libs/node_modules
+/resources/libs/*.js.map
+/resources/scripts/*.js.map
 node_modules
 UBTG.code-workspace
