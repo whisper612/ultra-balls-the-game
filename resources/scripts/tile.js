@@ -28,13 +28,24 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
                 game_js_1.Game.RES.blueBall.texture,
                 game_js_1.Game.RES.purpleBall.texture,
             ];
+            _this.pressedAlpha = 0.4;
             _this.background = new Sprite(game_js_1.Game.RES.field.texture);
             _this.addChild(_this.background);
-            _this.item = new Sprite(game_js_1.Game.RES.redBall.texture);
+            _this.item = new Sprite();
             _this.item.scale.set(0.8);
             _this.item.anchor.set(0.5);
             _this.item.position.set(75 / 2, 75 / 2);
-            console.log(type);
+            _this.item.interactive = true;
+            _this.item.buttonMode = true;
+            _this.item.on("mouseover", function () {
+                this.item.alpha = 0.75;
+            }.bind(_this));
+            _this.item.on("mouseout", function () {
+                this.item.alpha = 1;
+            }.bind(_this));
+            _this.item.on("mousedown", function () {
+                this.item.alpha = this.pressedAlpha;
+            }.bind(_this));
             _this.item.texture = _this.itemTextures[type];
             _this.addChild(_this.item);
             return _this;

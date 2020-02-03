@@ -23,7 +23,6 @@ define(["require", "exports", "./menu.js", "./map.js", "./field.js"], function (
             Game.RES = resources;
             _this.MENU = new menu_js_1.Menu(_this);
             _this.MAP = new map_js_1.Map(_this);
-            _this.FIELD = new field_js_1.Field(_this);
             _this.backgroundSprite = new Sprite(Game.RES.background.texture);
             _this.backgroundSprite.width = Game.WIDTH;
             _this.backgroundSprite.height = Game.HEIGHT;
@@ -39,9 +38,14 @@ define(["require", "exports", "./menu.js", "./map.js", "./field.js"], function (
             this.removeChild(this.MAP);
             this.addChild(this.MENU);
         };
+        Game.prototype.backToMap = function () {
+            this.removeChild(this.FIELD);
+            this.FIELD.destroy();
+            this.addChild(this.MAP);
+        };
         Game.prototype.showField = function (index) {
             this.removeChild(this.MAP);
-            this.FIELD.loadLevel(index);
+            this.FIELD = new field_js_1.Field(this, index);
             this.addChild(this.FIELD);
         };
         // Params

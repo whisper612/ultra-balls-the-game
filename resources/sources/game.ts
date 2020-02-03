@@ -22,7 +22,6 @@ export class Game extends Container {
         Game.RES = resources;
         this.MENU = new Menu(this);
         this.MAP = new Map(this);
-        this.FIELD = new Field(this);
 
         this.backgroundSprite = new Sprite(Game.RES.background.texture);
         this.backgroundSprite.width = Game.WIDTH;
@@ -32,22 +31,25 @@ export class Game extends Container {
         this.addChild(this.MENU);
     }
 
-    public showMap()
-    {
+    public showMap() {
         this.removeChild(this.MENU);
         this.addChild(this.MAP);
     }
     
-    public backToMenu()
-    {
+    public backToMenu() {
         this.removeChild(this.MAP);
         this.addChild(this.MENU);
     }
     
-    public showField(index: number)
-    {
+    public backToMap() {
+        this.removeChild(this.FIELD);
+        this.FIELD.destroy();
+        this.addChild(this.MAP); 
+    }
+
+    public showField(index: number) {
         this.removeChild(this.MAP);
-        this.FIELD.loadLevel(index);
+        this.FIELD = new Field(this, index);
         this.addChild(this.FIELD);
     }
 }

@@ -21,15 +21,13 @@ define(["require", "exports", "./button.js"], function (require, exports, button
             var _this = _super.call(this) || this;
             _this.buttons = new Array(10);
             var _loop_1 = function (i) {
-                var element = this_1.buttons[i];
-                element = new button_js_1.LvlButton((i + 1).toString());
-                element.scale.set(1.25, 1.25);
-                element.position.set(200 + i * 75 - (i % 2) * 75, (i % 2) * 125 + 375);
-                element.on('click', function () {
-                    console.log("Loading level: " + (i + 1).toString());
+                this_1.buttons[i] = new button_js_1.LvlButton((i + 1).toString());
+                this_1.buttons[i].scale.set(1.25, 1.25);
+                this_1.buttons[i].position.set(200 + i * 75 - (i % 2) * 75, (i % 2) * 125 + 375);
+                this_1.buttons[i].on('click', function () {
                     game.showField(i);
                 }.bind(this_1));
-                this_1.addChild(element);
+                this_1.addChild(this_1.buttons[i]);
             };
             var this_1 = this;
             for (var i = 0; i < _this.buttons.length; i++) {
@@ -47,10 +45,11 @@ define(["require", "exports", "./button.js"], function (require, exports, button
             return _this;
         }
         Map.prototype.redraw = function () {
-            // for (let i = 0; i < this.buttons.length; i++) {
-            //     if (this.buttons[i])
-            //         this.buttons[i].setNormalStyle();
-            // }
+            for (var i = 0; i < this.buttons.length; i++) {
+                if (this.buttons[i]) {
+                    this.buttons[i].reset();
+                }
+            }
             this.back.reset();
         };
         return Map;

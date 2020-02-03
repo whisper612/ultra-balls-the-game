@@ -28,7 +28,6 @@ define(["require", "exports", "./game.js", "./button.js"], function (require, ex
                 game.showMap();
             }.bind(_this));
             // this.settingsButton.on('click', function(){
-            // console.log(2);
             // }.bind(this));
             _this.addChild(_this.startButton);
             // this.addChild(this.settingsButton);
