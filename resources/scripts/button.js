@@ -23,18 +23,22 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
         function Button(_norm, _pressed, _text, _fonstSize, _fill, _align) {
             var _this = _super.call(this) || this;
             _this.pressedAlpha = 0.4;
+            // Stock button params
             _this.sprite = new Sprite();
             _this.setAnchor(0.5, 0.5);
             _this.sprite.interactive = true;
             _this.sprite.buttonMode = true;
+            // Texture resieving from parametrs
             _this.normalTexture = _norm;
             _this.pressTexture = _pressed;
+            // Stock text params
             _this.text = new Text(_text);
             _this.text.anchor.set(0.5, 0.5);
             _this.text.position.set(0, _this.sprite.height / 2);
             _this.text.style = new TextStyle({ fontSize: _fonstSize, fontFamily: "Sans", fill: _fill, align: _align, fontWeight: "400",
                 dropShadow: false });
             _this.setShadowEffects();
+            // Events listeners for buttons
             _this.sprite.on("mouseover", function () {
                 this.setPressStyle();
             }.bind(_this));
@@ -68,6 +72,7 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
         Button.prototype.setAnchor = function (x, y) {
             this.sprite.anchor.set(x, y);
         };
+        // Functions for customzing buttons
         Button.prototype.setNormalStyle = function () {
             this.sprite.texture = this.normalTexture;
             this.text.style.fontWeight = "400";
@@ -90,21 +95,6 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
         return Button;
     }(Container));
     exports.Button = Button;
-    var LvlButton = /** @class */ (function (_super) {
-        __extends(LvlButton, _super);
-        function LvlButton(text, _fonstSize, _fill, _align) {
-            if (_fonstSize === void 0) { _fonstSize = 36; }
-            if (_fill === void 0) { _fill = '#00ccff'; }
-            if (_align === void 0) { _align = "center"; }
-            return _super.call(this, game_js_1.Game.RES.lvlNormal.texture, game_js_1.Game.RES.lvlPress.texture, text, _fonstSize, _fill, _align) || this;
-        }
-        LvlButton.prototype.setShadowEffects = function () {
-            this.text.style.dropShadowDistance = 2;
-            this.text.style.dropShadowBlur = 3;
-        };
-        return LvlButton;
-    }(Button));
-    exports.LvlButton = LvlButton;
     var MenuButton = /** @class */ (function (_super) {
         __extends(MenuButton, _super);
         function MenuButton(text, _fonstSize, _fill, _align) {

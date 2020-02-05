@@ -1,8 +1,8 @@
 import Application = PIXI.Application;
 import Sprite = PIXI.Sprite;
+import Text = PIXI.Text;
+import TextStyle = PIXI.TextStyle;
 import Container = PIXI.Container;
-import { Menu } from "./menu.js";
-import { Map } from "./map.js";
 import { Field } from "./field.js";
 
 export class Game extends Container {
@@ -10,46 +10,44 @@ export class Game extends Container {
     // Params
     public static WIDTH: number = 1024;
     public static HEIGHT: number = 1024;
+    public static SCORE: number = 0;
     public static RES: any; 
 
-    private MENU: Menu;
-    private MAP: Map;
     private FIELD: Field;
     private backgroundSprite: Sprite;
+    public static SCORE_TEXT: Text;
 
     constructor(resources: any) {
         super();
+        // Res from main loader
         Game.RES = resources;
-        this.MENU = new Menu(this);
-        this.MAP = new Map(this);
 
+        // Bacground draw
         this.backgroundSprite = new Sprite(Game.RES.background.texture);
         this.backgroundSprite.width = Game.WIDTH;
         this.backgroundSprite.height = Game.HEIGHT;
 
+        this.FIELD = new Field();
+
+        Game.SCORE_TEXT = new Text(Game.SCORE.toString());
+        Game.SCORE_TEXT.anchor.set(0.5);
+        Game.SCORE_TEXT.position.set(Game.WIDTH/2, 100);
+        
         this.addChild(this.backgroundSprite);
-        this.addChild(this.MENU);
-    }
-
-    public showMap() {
-        this.removeChild(this.MENU);
-        this.addChild(this.MAP);
-    }
-    
-    public backToMenu() {
-        this.removeChild(this.MAP);
-        this.addChild(this.MENU);
-    }
-    
-    public backToMap() {
-        this.removeChild(this.FIELD);
-        this.FIELD.destroy();
-        this.addChild(this.MAP); 
-    }
-
-    public showField(index: number) {
-        this.removeChild(this.MAP);
-        this.FIELD = new Field(this, index);
+        this.addChild(Game.SCORE_TEXT);
         this.addChild(this.FIELD);
+    }
+
+    public eventKeyboardInput(event: KeyboardEvent): void {
+        if (event.keyCode == 32 && event.type == 'keydown') {
+            this.FIELD.destroyMatches(this.FIELD.findMatches());
+        }
+        if (event.keyCode == 17 && event.type == 'keydown') {
+            this.FIELD.dropTiles();
+        }
+        // public dropTiles() {
+
+
+        
     }
 }

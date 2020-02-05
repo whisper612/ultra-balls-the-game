@@ -12,7 +12,6 @@
     "exclude": [],
     "files": [
         "./resources/sources/main.ts",
-        "./resources/sources/menu.ts",
         "./resources/sources/game.ts",
         "resources/libs/pixi.js.d.ts"
     ]

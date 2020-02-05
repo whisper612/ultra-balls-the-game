@@ -8,6 +8,7 @@ import { Game } from "./game.js";
 
 export class Button extends Container {
 
+    // Params
     private sprite: Sprite;
     private normalTexture: Texture;
     private pressTexture: Texture;
@@ -17,34 +18,39 @@ export class Button extends Container {
     constructor(_norm : Texture, _pressed: Texture, _text: string, 
         _fonstSize: number, _fill: string , _align: string) {
         super();
+        // Stock button params
         this.sprite = new Sprite();
         this.setAnchor(0.5, 0.5);
         this.sprite.interactive = true;
         this.sprite.buttonMode = true;
+        // Texture resieving from parametrs
         this.normalTexture = _norm;
         this.pressTexture = _pressed;
 
+        // Stock text params
         this.text = new Text(_text);
         this.text.anchor.set(0.5, 0.5);
         this.text.position.set(0, this.sprite.height / 2);
         this.text.style = new TextStyle({ fontSize: _fonstSize, fontFamily: "Sans", fill: _fill, align: _align, fontWeight: "400", 
                                         dropShadow: false});
         this.setShadowEffects();
+
+        // Events listeners for buttons
         this.sprite.on("mouseover", function() {
             this.setPressStyle();
         }.bind(this));
-        this.sprite.on("mouseout", function () {
+        this.sprite.on("mouseout", function (): void {
             if (this.alpha == 1)
             {
                 this.setNormalStyle();
             }
         }.bind(this));
 
-        this.sprite.on("mousedown", function () {
+        this.sprite.on("mousedown", function ():void {
             this.alpha = this.pressedAlpha;
         }.bind(this));
         
-        this.sprite.on("mouseupoutside", function () {
+        this.sprite.on("mouseupoutside", function (): void {
             this.alpha = 1;
             if (this.sprite.texture == this.pressTexture)
             {
@@ -52,7 +58,7 @@ export class Button extends Container {
             }
         }.bind(this));
 
-        this.sprite.on("mouseup", function () {
+        this.sprite.on("mouseup", function (): void {
             this.sprite.interactive = false;
             this.emit("click");
             setTimeout(function() {
@@ -71,6 +77,7 @@ export class Button extends Container {
         this.sprite.anchor.set(x, y);
     }
 
+    // Functions for customzing buttons
     public setNormalStyle()
     {
         this.sprite.texture = this.normalTexture;
@@ -96,20 +103,6 @@ export class Button extends Container {
         this.setNormalStyle();
         this.sprite.interactive = true;
         this.alpha = 1;
-    }
-}
-
-export class LvlButton extends Button {
-    constructor(text: string, _fonstSize: number = 36, 
-                _fill: string = '#00ccff', _align: string = "center") {
-        super(Game.RES.lvlNormal.texture, Game.RES.lvlPress.texture, text, 
-                _fonstSize, _fill, _align);
-    }
-
-    public setShadowEffects()
-    {
-        this.text.style.dropShadowDistance = 2;
-        this.text.style.dropShadowBlur = 3;
     }
 }
 

@@ -11,46 +11,44 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-define(["require", "exports", "./menu.js", "./map.js", "./field.js"], function (require, exports, menu_js_1, map_js_1, field_js_1) {
+define(["require", "exports", "./field.js"], function (require, exports, field_js_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Sprite = PIXI.Sprite;
+    var Text = PIXI.Text;
     var Container = PIXI.Container;
     var Game = /** @class */ (function (_super) {
         __extends(Game, _super);
         function Game(resources) {
             var _this = _super.call(this) || this;
+            // Res from main loader
             Game.RES = resources;
-            _this.MENU = new menu_js_1.Menu(_this);
-            _this.MAP = new map_js_1.Map(_this);
+            // Bacground draw
             _this.backgroundSprite = new Sprite(Game.RES.background.texture);
             _this.backgroundSprite.width = Game.WIDTH;
             _this.backgroundSprite.height = Game.HEIGHT;
+            _this.FIELD = new field_js_1.Field();
+            Game.SCORE_TEXT = new Text(Game.SCORE.toString());
+            Game.SCORE_TEXT.anchor.set(0.5);
+            Game.SCORE_TEXT.position.set(Game.WIDTH / 2, 100);
             _this.addChild(_this.backgroundSprite);
-            _this.addChild(_this.MENU);
+            _this.addChild(Game.SCORE_TEXT);
+            _this.addChild(_this.FIELD);
             return _this;
         }
-        Game.prototype.showMap = function () {
-            this.removeChild(this.MENU);
-            this.addChild(this.MAP);
-        };
-        Game.prototype.backToMenu = function () {
-            this.removeChild(this.MAP);
-            this.addChild(this.MENU);
-        };
-        Game.prototype.backToMap = function () {
-            this.removeChild(this.FIELD);
-            this.FIELD.destroy();
-            this.addChild(this.MAP);
-        };
-        Game.prototype.showField = function (index) {
-            this.removeChild(this.MAP);
-            this.FIELD = new field_js_1.Field(this, index);
-            this.addChild(this.FIELD);
+        Game.prototype.eventKeyboardInput = function (event) {
+            if (event.keyCode == 32 && event.type == 'keydown') {
+                this.FIELD.destroyMatches(this.FIELD.findMatches());
+            }
+            if (event.keyCode == 17 && event.type == 'keydown') {
+                this.FIELD.dropTiles();
+            }
+            // public dropTiles() {
         };
         // Params
         Game.WIDTH = 1024;
         Game.HEIGHT = 1024;
+        Game.SCORE = 0;
         return Game;
     }(Container));
     exports.Game = Game;

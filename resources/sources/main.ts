@@ -1,22 +1,23 @@
 import Application = PIXI.Application;
 import Loader = PIXI.Loader;
-import Sprite = PIXI.Sprite;
 import {Game} from "./game.js"
 
 const loader: Loader = new Loader();
 
-loader.add("redBall", "assets/images/balls/redBall.png");
-loader.add("orangeBall", "assets/images/balls/orangeBall.png");
-loader.add("greenBall", "assets/images/balls/greenBall.png");
-loader.add("dkBlueBall", "assets/images/balls/dkBlueBall.png");
-loader.add("blueBall", "assets/images/balls/blueBall.png");
-loader.add("purpleBall", "assets/images/balls/purpleBall.png");
-loader.add("background", "assets/images/field/background.png");
-loader.add("field", "assets/images/field/field.png");
-loader.add("menuButtonNormal", "assets/images/buttons/menuButtonNormal.png");
-loader.add("menuButtonPress", "assets/images/buttons/menuButtonPress.png");
-loader.add("lvlNormal", "assets/images/buttons/lvlNormal.png");
-loader.add("lvlPress", "assets/images/buttons/lvlPress.png");
+//add .png to Pixi loader
+loader.add("redBall", "/resources/assets/images/balls/redBall.png");
+loader.add("orangeBall", "/resources/assets/images/balls/orangeBall.png");
+loader.add("greenBall", "/resources/assets/images/balls/greenBall.png");
+loader.add("dkBlueBall", "/resources/assets/images/balls/dkBlueBall.png");
+loader.add("blueBall", "/resources/assets/images/balls/blueBall.png");
+loader.add("purpleBall", "/resources/assets/images/balls/purpleBall.png");
+loader.add("background", "/resources/assets/images/field/background.png");
+loader.add("field", "/resources/assets/images/field/field.png");
+loader.add("fieldHighlighted", "/resources/assets/images/field/field_highlighted.png");
+loader.add("menuButtonNormal", "/resources/assets/images/buttons/menuButtonNormal.png");
+loader.add("menuButtonPress", "/resources/assets/images/buttons/menuButtonPress.png");
+loader.add("lvlNormal", "/resources/assets/images/buttons/lvlNormal.png");
+loader.add("lvlPress", "/resources/assets/images/buttons/lvlPress.png");
 loader.load(setup);
 
 // Create a Pixi Application
@@ -27,7 +28,7 @@ let app: Application = new Application({
     resolution: 1
 });
 
-// App settings
+// App sizing
 function eventListenerResize(): void {
     app.renderer.autoResize = true;
     app.renderer.resize(window.innerWidth, window.innerHeight);
@@ -48,4 +49,6 @@ document.body.appendChild(app.view);
 function setup(loader: Loader, resources: any): void {
     let game: Game = new Game(resources);
     app.stage.addChild(game);
+    document.addEventListener('keydown', game.eventKeyboardInput.bind(game));
+    document.addEventListener('keyup', game.eventKeyboardInput.bind(game));
 }
