@@ -51,6 +51,9 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
                 this.alpha = this.pressedAlpha;
                 this.setPressStyle();
             }.bind(_this));
+            _this.sprite.on("pointerup", function () {
+                this.setNormalStyle();
+            }.bind(_this));
             _this.sprite.on("pointerupoutside", function () {
                 this.alpha = 1;
                 if (this.sprite.texture == this.pressTexture) {

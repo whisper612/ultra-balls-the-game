@@ -50,6 +50,10 @@ export class Button extends Container {
             this.alpha = this.pressedAlpha;
             this.setPressStyle();
         }.bind(this));
+
+        this.sprite.on("pointerup", function (): void {
+            this.setNormalStyle();
+        }.bind(this));
         
         this.sprite.on("pointerupoutside", function (): void {
             this.alpha = 1;
