@@ -48,6 +48,7 @@ export class Button extends Container {
 
         this.sprite.on("pointerdown", function ():void {
             this.alpha = this.pressedAlpha;
+            this.setPressStyle();
         }.bind(this));
         
         this.sprite.on("pointerupoutside", function (): void {
