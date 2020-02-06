@@ -58,23 +58,23 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             _this.item.buttonMode = true;
             _this._field = field;
             _this.setState(_this.States.IDLE);
-            _this.item.on("mouseover", function () {
+            _this.item.on("pointerover", function () {
                 if (this._state == this.States.IDLE)
                     this.item.alpha = 0.75;
             }.bind(_this));
-            _this.item.on("mouseout", function () {
+            _this.item.on("pointerout", function () {
                 if (this._state == this.States.IDLE)
                     this.item.alpha = 1;
             }.bind(_this));
-            _this.item.on("mousedown", function () {
+            _this.item.on("pointerdown", function () {
                 if (this._state == this.States.IDLE)
                     this.select();
                 else if (this._state == this.States.SELECTED)
                     this.deselect();
             }.bind(_this));
-            _this.item.on("mouseup", function () {
+            _this.item.on("pointerup", function () {
             }.bind(_this));
-            _this.item.on("mouseupoutside", function () {
+            _this.item.on("pointerupoutside", function () {
                 if (this._state == this.States.SELECTED)
                     this.deselect();
             }.bind(_this));
@@ -85,7 +85,6 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
         Tile.prototype.setState = function (state) {
             this._state = state;
         };
-        // на селекте должно проверится можно ли туда
         Tile.prototype.select = function () {
             if (this._field.selectedTile == null) {
                 this._field.selectedTile = this;
@@ -97,7 +96,6 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
                 this.swap();
             }
         };
-        // на деселекте должна провериться комбуха
         Tile.prototype.deselect = function () {
             if (this._field.selectedTile == this) {
                 this._field.selectedTile = null;
@@ -114,10 +112,13 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
                 this._field.selectedTile.deselect();
                 console.log("Swapped");
                 if (this._field.findMatches().length > 0) {
+                    this._field.switchInteractive(false);
                     setTimeout(function () {
                         this._field.destroyMatches(this._field.findMatches());
                     }.bind(this), 750);
                 }
+                else
+                    this._field.switchInteractive(true);
             }
             else
                 console.log("Can't swap");
@@ -138,9 +139,9 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             }
             this.highlighted = false;
         };
-        Tile.prototype.switchInteractive = function () {
-            this.item.interactive = !this.item.interactive;
-            this.item.buttonMode = !this.item.buttonMode;
+        Tile.prototype.switchInteractive = function (interactive) {
+            this.item.interactive = interactive;
+            this.item.buttonMode = interactive;
         };
         return Tile;
     }(Container));

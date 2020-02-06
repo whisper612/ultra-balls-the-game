@@ -23,7 +23,7 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
     var app = new Application({
         backgroundColor: 0x03172C,
         antialias: true,
-        transparent: false,
+        transparent: true,
         resolution: 1
     });
     // App sizing

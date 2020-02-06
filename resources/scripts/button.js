@@ -35,7 +35,7 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             _this.text = new Text(_text);
             _this.text.anchor.set(0.5, 0.5);
             _this.text.position.set(0, _this.sprite.height / 2);
-            _this.text.style = new TextStyle({ fontSize: _fonstSize, fontFamily: "Sans", fill: _fill, align: _align, fontWeight: "400",
+            _this.text.style = new TextStyle({ fontSize: _fonstSize, fontFamily: "Unispace", fill: _fill, align: _align, fontWeight: "400",
                 dropShadow: false });
             _this.setShadowEffects();
             // Events listeners for buttons

@@ -31,7 +31,7 @@ export class Button extends Container {
         this.text = new Text(_text);
         this.text.anchor.set(0.5, 0.5);
         this.text.position.set(0, this.sprite.height / 2);
-        this.text.style = new TextStyle({ fontSize: _fonstSize, fontFamily: "Sans", fill: _fill, align: _align, fontWeight: "400", 
+        this.text.style = new TextStyle({ fontSize: _fonstSize, fontFamily: "Unispace", fill: _fill, align: _align, fontWeight: "400", 
                                         dropShadow: false});
         this.setShadowEffects();
 

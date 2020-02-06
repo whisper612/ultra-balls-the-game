@@ -38,11 +38,14 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                     this.addChild(this.tiles[i][j]);
                 }
             }
-            setTimeout(function () {
-                if (this.findMatches().length > 0) {
+            if (this.findMatches().length > 0) {
+                this.switchInteractive(false);
+                setTimeout(function () {
                     this.destroyMatches(this.findMatches());
-                }
-            }.bind(this), 750);
+                }.bind(this), 750);
+            }
+            else
+                this.switchInteractive(true);
         };
         Field.prototype.setSelected = function (tile) {
             this.selectedTile = tile;
@@ -126,10 +129,13 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                 }
             }
             if (this.findMatches().length > 0) {
+                this.switchInteractive(false);
                 setTimeout(function () {
                     this.destroyMatches(this.findMatches());
                 }.bind(this), 750);
             }
+            else
+                this.switchInteractive(true);
         };
         Field.prototype.destroyMatches = function (matches) {
             var count = 0;
@@ -150,10 +156,10 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                 this.dropTiles();
             }.bind(this), 750);
         };
-        Field.prototype.switchInteractive = function () {
+        Field.prototype.switchInteractive = function (interactive) {
             for (var i = 0; i < this.tiles.length; i++) {
                 for (var j = 0; j < this.tiles[i].length; j++) {
-                    this.tiles[i][j].switchInteractive();
+                    this.tiles[i][j].switchInteractive(interactive);
                 }
             }
         };

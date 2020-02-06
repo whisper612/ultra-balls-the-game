@@ -24,7 +24,7 @@ loader.load(setup);
 let app: Application = new Application({
     backgroundColor: 0x03172C,
     antialias: true,
-    transparent: false,
+    transparent: true,
     resolution: 1
 });
 

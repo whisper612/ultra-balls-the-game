@@ -11,11 +11,12 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-define(["require", "exports", "./field.js"], function (require, exports, field_js_1) {
+define(["require", "exports", "./field.js", "./button.js"], function (require, exports, field_js_1, button_js_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Sprite = PIXI.Sprite;
     var Text = PIXI.Text;
+    var TextStyle = PIXI.TextStyle;
     var Container = PIXI.Container;
     var Game = /** @class */ (function (_super) {
         __extends(Game, _super);
@@ -23,16 +24,28 @@ define(["require", "exports", "./field.js"], function (require, exports, field_j
             var _this = _super.call(this) || this;
             // Res from main loader
             Game.RES = resources;
-            // Bacground draw
+            // Background draw
             _this.backgroundSprite = new Sprite(Game.RES.background.texture);
             _this.backgroundSprite.width = Game.WIDTH;
             _this.backgroundSprite.height = Game.HEIGHT;
             _this.FIELD = new field_js_1.Field();
             Game.SCORE_TEXT = new Text(Game.SCORE.toString());
+            Game.SCORE_TEXT.style = new TextStyle({
+                fontSize: 68, fontFamily: "Unispace", fill: '#00ccff', align: "center", fontWeight: "600",
+                dropShadow: true,
+                dropShadowDistance: 6,
+                dropShadowBlur: 5,
+            });
             Game.SCORE_TEXT.anchor.set(0.5);
-            Game.SCORE_TEXT.position.set(Game.WIDTH / 2, 100);
+            Game.SCORE_TEXT.position.set(Game.WIDTH / 2, 250);
+            _this.startButton = new button_js_1.MenuButton("Start");
+            _this.startButton.position.set(Game.WIDTH / 4, 1100);
+            _this.settingsButton = new button_js_1.MenuButton("Settings");
+            _this.settingsButton.position.set(Game.WIDTH * 0.75, 1100);
             _this.addChild(_this.backgroundSprite);
             _this.addChild(Game.SCORE_TEXT);
+            _this.addChild(_this.startButton);
+            _this.addChild(_this.settingsButton);
             _this.addChild(_this.FIELD);
             return _this;
         }
@@ -46,8 +59,8 @@ define(["require", "exports", "./field.js"], function (require, exports, field_j
             // public dropTiles() {
         };
         // Params
-        Game.WIDTH = 1024;
-        Game.HEIGHT = 1024;
+        Game.WIDTH = 720;
+        Game.HEIGHT = 1280;
         Game.SCORE = 0;
         return Game;
     }(Container));

@@ -72,28 +72,28 @@ export class Tile extends Container {
 
         this.setState(this.States.IDLE);
 
-        this.item.on("mouseover", function (): void {
+        this.item.on("pointerover", function (): void {
             if (this._state == this.States.IDLE)
                 this.item.alpha = 0.75;
             }.bind(this));
             
-            this.item.on("mouseout", function (): void {
+            this.item.on("pointerout", function (): void {
                 if (this._state == this.States.IDLE)
                 this.item.alpha = 1;
             }.bind(this));        
             
-            this.item.on("mousedown", function (): void {
+            this.item.on("pointerdown", function (): void {
                 if (this._state == this.States.IDLE)
                 this.select();
                 else if (this._state == this.States.SELECTED)
                 this.deselect();
             }.bind(this));
             
-            this.item.on("mouseup", function (): void {
+            this.item.on("pointerup", function (): void {
                 
             }.bind(this));
             
-            this.item.on("mouseupoutside", function (): void {
+            this.item.on("pointerupoutside", function (): void {
                 if (this._state == this.States.SELECTED)
                 this.deselect();
             }.bind(this));
@@ -104,7 +104,6 @@ export class Tile extends Container {
             
         }
         
-        // на селекте должно проверится можно ли туда
         public select()
         {
             if(this._field.selectedTile == null)
@@ -120,7 +119,6 @@ export class Tile extends Container {
             }
         }
 
-        // на деселекте должна провериться комбуха
         public deselect()
         {
             if (this._field.selectedTile == this)
@@ -142,10 +140,13 @@ export class Tile extends Container {
             console.log("Swapped");
             if (this._field.findMatches().length > 0)
             {
+                this._field.switchInteractive(false);
                 setTimeout(function () {
                     this._field.destroyMatches(this._field.findMatches());
                 }.bind(this), 750);
             }
+            else
+                this._field.switchInteractive(true);
         }
         else
             console.log("Can't swap");
@@ -174,9 +175,9 @@ export class Tile extends Container {
         this.highlighted = false;
     }
 
-    public switchInteractive ()
+    public switchInteractive (interactive: boolean)
     {
-        this.item.interactive = !this.item.interactive;
-        this.item.buttonMode = !this.item.buttonMode;
+        this.item.interactive = interactive;
+        this.item.buttonMode = interactive;
     }
 }

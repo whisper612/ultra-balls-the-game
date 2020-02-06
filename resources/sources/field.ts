@@ -35,12 +35,15 @@ export class Field extends Container {
             }
         }
 
-        setTimeout(function () {
-            if (this.findMatches().length > 0)
-            {
+        if (this.findMatches().length > 0)
+        {
+            this.switchInteractive(false);
+            setTimeout(function () {
                 this.destroyMatches(this.findMatches());
-            }
-        }.bind(this), 750);
+            }.bind(this), 750);
+        }
+        else
+            this.switchInteractive(true);
     }
 
     public setSelected(tile: Tile)
@@ -133,13 +136,17 @@ export class Field extends Container {
         }
         if (this.findMatches().length > 0)
         {
+            this.switchInteractive(false);
             setTimeout(function () {
                 this.destroyMatches(this.findMatches());
             }.bind(this), 750);
         }
+        else
+            this.switchInteractive(true);
     }
 
     public destroyMatches(matches: Tile[][]) {
+        
         var count = 0;
         for (var i = 0; i < matches.length; i++) {
             for (var j = 0; j < matches[i].length; j++) {
@@ -157,14 +164,14 @@ export class Field extends Container {
         // this.switchInteractive();
         setTimeout(function () {
             this.dropTiles();
-        }.bind(this), 750);
+        }.bind(this), 750);       
     }
 
-    public switchInteractive()
+    public switchInteractive(interactive: boolean)
     {
         for (var i = 0; i < this.tiles.length; i++) {
             for (var j = 0; j < this.tiles[i].length; j++) {
-                this.tiles[i][j].switchInteractive();
+                this.tiles[i][j].switchInteractive(interactive);
             }
         }
     }
