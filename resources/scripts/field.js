@@ -42,7 +42,7 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                 this.switchInteractive(false);
                 setTimeout(function () {
                     this.destroyMatches(this.findMatches());
-                }.bind(this), 750);
+                }.bind(this), 500);
             }
             else
                 this.switchInteractive(true);
@@ -119,7 +119,7 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
             // console.log(xeyviyCounter > 0);
             setTimeout(function () {
                 this.generateTiles();
-            }.bind(this), 750);
+            }.bind(this), 500);
         };
         Field.prototype.generateTiles = function () {
             for (var i = 0; i < this.tiles.length; i++) {
@@ -132,7 +132,7 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                 this.switchInteractive(false);
                 setTimeout(function () {
                     this.destroyMatches(this.findMatches());
-                }.bind(this), 750);
+                }.bind(this), 500);
             }
             else
                 this.switchInteractive(true);
@@ -154,7 +154,7 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
             // this.switchInteractive();
             setTimeout(function () {
                 this.dropTiles();
-            }.bind(this), 750);
+            }.bind(this), 500);
         };
         Field.prototype.switchInteractive = function (interactive) {
             for (var i = 0; i < this.tiles.length; i++) {

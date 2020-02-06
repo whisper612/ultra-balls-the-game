@@ -115,7 +115,7 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
                     this._field.switchInteractive(false);
                     setTimeout(function () {
                         this._field.destroyMatches(this._field.findMatches());
-                    }.bind(this), 750);
+                    }.bind(this), 500);
                 }
                 else
                     this._field.switchInteractive(true);

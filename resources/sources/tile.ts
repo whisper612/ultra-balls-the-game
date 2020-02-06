@@ -143,7 +143,7 @@ export class Tile extends Container {
                 this._field.switchInteractive(false);
                 setTimeout(function () {
                     this._field.destroyMatches(this._field.findMatches());
-                }.bind(this), 750);
+                }.bind(this), 500);
             }
             else
                 this._field.switchInteractive(true);

@@ -40,7 +40,7 @@ export class Field extends Container {
             this.switchInteractive(false);
             setTimeout(function () {
                 this.destroyMatches(this.findMatches());
-            }.bind(this), 750);
+            }.bind(this), 500);
         }
         else
             this.switchInteractive(true);
@@ -123,7 +123,7 @@ export class Field extends Container {
         // console.log(xeyviyCounter > 0);
         setTimeout(function() {
             this.generateTiles();
-        }.bind(this), 750);
+        }.bind(this), 500);
     }
 
     public generateTiles()
@@ -139,7 +139,7 @@ export class Field extends Container {
             this.switchInteractive(false);
             setTimeout(function () {
                 this.destroyMatches(this.findMatches());
-            }.bind(this), 750);
+            }.bind(this), 500);
         }
         else
             this.switchInteractive(true);
@@ -164,7 +164,7 @@ export class Field extends Container {
         // this.switchInteractive();
         setTimeout(function () {
             this.dropTiles();
-        }.bind(this), 750);       
+        }.bind(this), 500);       
     }
 
     public switchInteractive(interactive: boolean)
