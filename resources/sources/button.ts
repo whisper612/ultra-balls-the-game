@@ -36,21 +36,21 @@ export class Button extends Container {
         this.setShadowEffects();
 
         // Events listeners for buttons
-        this.sprite.on("mouseover", function() {
+        this.sprite.on("pointerover", function() {
             this.setPressStyle();
         }.bind(this));
-        this.sprite.on("mouseout", function (): void {
+        this.sprite.on("pointerout", function (): void {
             if (this.alpha == 1)
             {
                 this.setNormalStyle();
             }
         }.bind(this));
 
-        this.sprite.on("mousedown", function ():void {
+        this.sprite.on("pointerdown", function ():void {
             this.alpha = this.pressedAlpha;
         }.bind(this));
         
-        this.sprite.on("mouseupoutside", function (): void {
+        this.sprite.on("pointerupoutside", function (): void {
             this.alpha = 1;
             if (this.sprite.texture == this.pressTexture)
             {
@@ -58,7 +58,7 @@ export class Button extends Container {
             }
         }.bind(this));
 
-        this.sprite.on("mouseup", function (): void {
+        this.sprite.on("pointerup", function (): void {
             this.sprite.interactive = false;
             this.emit("click");
             setTimeout(function() {

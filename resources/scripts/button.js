@@ -39,24 +39,24 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
                 dropShadow: false });
             _this.setShadowEffects();
             // Events listeners for buttons
-            _this.sprite.on("mouseover", function () {
+            _this.sprite.on("pointerover", function () {
                 this.setPressStyle();
             }.bind(_this));
-            _this.sprite.on("mouseout", function () {
+            _this.sprite.on("pointerout", function () {
                 if (this.alpha == 1) {
                     this.setNormalStyle();
                 }
             }.bind(_this));
-            _this.sprite.on("mousedown", function () {
+            _this.sprite.on("pointerdown", function () {
                 this.alpha = this.pressedAlpha;
             }.bind(_this));
-            _this.sprite.on("mouseupoutside", function () {
+            _this.sprite.on("pointerupoutside", function () {
                 this.alpha = 1;
                 if (this.sprite.texture == this.pressTexture) {
                     this.setNormalStyle();
                 }
             }.bind(_this));
-            _this.sprite.on("mouseup", function () {
+            _this.sprite.on("pointerup", function () {
                 this.sprite.interactive = false;
                 this.emit("click");
                 setTimeout(function () {
