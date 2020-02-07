@@ -164,7 +164,7 @@ export class Field extends Container {
         // this.switchInteractive();
         setTimeout(function () {
             this.dropTiles();
-            createjs.Sound.play(Game.destroySound);
+            createjs.Sound.play(Game.destroySound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.5);
         }.bind(this), 500);       
     }
 

@@ -66,7 +66,7 @@ define(["require", "exports", "./field.js", "./button.js"], function (require, e
             // public dropTiles() {
         };
         Game.prototype.eventLoad = function () {
-            createjs.Sound.play(Game.ambientSound, createjs.Sound.INTERRUPT_ANY, 0, 0, -1, 0.2);
+            createjs.Sound.play(Game.ambientSound, createjs.Sound.INTERRUPT_ANY, 0, 0, -1, 0.35);
         };
         // Params
         Game.WIDTH = 720;

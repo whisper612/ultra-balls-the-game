@@ -81,6 +81,6 @@ export class Game extends Container {
     }
 
     public eventLoad() {
-        createjs.Sound.play(Game.ambientSound, createjs.Sound.INTERRUPT_ANY, 0, 0, -1, 0.2);
+        createjs.Sound.play(Game.ambientSound, createjs.Sound.INTERRUPT_ANY, 0, 0, -1, 0.35);
     }
 }

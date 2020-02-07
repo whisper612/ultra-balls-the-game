@@ -49,7 +49,7 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             }.bind(_this));
             _this.sprite.on("pointerdown", function () {
                 this.alpha = this.pressedAlpha;
-                createjs.Sound.play(game_js_1.Game.pressSound);
+                createjs.Sound.play(game_js_1.Game.pressSound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.5);
                 this.setPressStyle();
             }.bind(_this));
             _this.sprite.on("pointerup", function () {

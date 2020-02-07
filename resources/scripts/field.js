@@ -154,7 +154,7 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
             // this.switchInteractive();
             setTimeout(function () {
                 this.dropTiles();
-                createjs.Sound.play(game_js_1.Game.destroySound);
+                createjs.Sound.play(game_js_1.Game.destroySound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.5);
             }.bind(this), 500);
         };
         Field.prototype.switchInteractive = function (interactive) {

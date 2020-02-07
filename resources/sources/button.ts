@@ -48,7 +48,7 @@ export class Button extends Container {
 
         this.sprite.on("pointerdown", function ():void {
             this.alpha = this.pressedAlpha;
-            createjs.Sound.play(Game.pressSound);
+            createjs.Sound.play(Game.pressSound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.5);
             this.setPressStyle();
         }.bind(this));
 
