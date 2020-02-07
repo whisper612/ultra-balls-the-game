@@ -129,7 +129,7 @@ export class Tile extends Container {
             this.setState(this.States.IDLE);
             this.item.alpha = 1;
             this._field.unHighlightNeighbours(this);
-            createjs.Sound.play(Game.unselectSound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.5);ершыю
+            createjs.Sound.play(Game.unselectSound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.5);
         }
 
         public swap() {
