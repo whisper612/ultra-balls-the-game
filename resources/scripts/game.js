@@ -47,15 +47,14 @@ define(["require", "exports", "./field.js", "./button.js"], function (require, e
             _this.addChild(Game.SCORE_TEXT);
             _this.addChild(_this.startButton);
             _this.addChild(_this.settingsButton);
+            Sound.on("fileload", _this.eventLoad, _this);
             Sound.registerSound("/resources/assets/sounds/select.mp3", Game.selectSound);
             Sound.registerSound("/resources/assets/sounds/unselect.mp3", Game.unselectSound);
             Sound.registerSound("/resources/assets/sounds/destroy.mp3", Game.destroySound);
             Sound.registerSound("/resources/assets/sounds/press.mp3", Game.pressSound);
+            Sound.registerSound("/resources/assets/sounds/ambient.mp3", Game.ambientSound);
             _this.addChild(_this.FIELD);
             return _this;
-            // createjs.Sound.on("fileload", this.eventLoad, this);
-            // Game.instanceAmbient = createjs.Sound.play("/resources/assets/sounds/ambient.mp3", { loop: 2 , duration: 5});
-            // Game.instanceAmbient.on("loop", this.handleSoundLoop);
         }
         Game.prototype.eventKeyboardInput = function (event) {
             if (event.keyCode == 32 && event.type == 'keydown') {
@@ -66,6 +65,9 @@ define(["require", "exports", "./field.js", "./button.js"], function (require, e
             }
             // public dropTiles() {
         };
+        Game.prototype.eventLoad = function () {
+            createjs.Sound.play(Game.ambientSound, createjs.Sound.INTERRUPT_ANY, 0, 0, -1, 0.2);
+        };
         // Params
         Game.WIDTH = 720;
         Game.HEIGHT = 1280;
@@ -74,6 +76,7 @@ define(["require", "exports", "./field.js", "./button.js"], function (require, e
         Game.unselectSound = "Unselect";
         Game.destroySound = "Destroy";
         Game.pressSound = "Press";
+        Game.ambientSound = "Ambient";
         return Game;
     }(Container));
     exports.Game = Game;

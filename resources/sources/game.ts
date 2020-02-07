@@ -25,7 +25,7 @@ export class Game extends Container {
     public static unselectSound: any = "Unselect"
     public static destroySound: any = "Destroy"
     public static pressSound: any = "Press"
-    public static instanceAmbient: any;
+    public static ambientSound: any = "Ambient";
     
 
     constructor(resources: any) {
@@ -60,14 +60,14 @@ export class Game extends Container {
         this.addChild(Game.SCORE_TEXT);
         this.addChild(this.startButton);
         this.addChild(this.settingsButton);
+
+        Sound.on("fileload", this.eventLoad, this);
         Sound.registerSound("/resources/assets/sounds/select.mp3", Game.selectSound);
         Sound.registerSound("/resources/assets/sounds/unselect.mp3", Game.unselectSound);
         Sound.registerSound("/resources/assets/sounds/destroy.mp3", Game.destroySound);
         Sound.registerSound("/resources/assets/sounds/press.mp3", Game.pressSound);
+        Sound.registerSound("/resources/assets/sounds/ambient.mp3", Game.ambientSound);
         this.addChild(this.FIELD);
-        // createjs.Sound.on("fileload", this.eventLoad, this);
-        // Game.instanceAmbient = createjs.Sound.play("/resources/assets/sounds/ambient.mp3", { loop: 2 , duration: 5});
-        // Game.instanceAmbient.on("loop", this.handleSoundLoop);
     }
 
     public eventKeyboardInput(event: KeyboardEvent): void {
@@ -80,7 +80,7 @@ export class Game extends Container {
         // public dropTiles() {
     }
 
-    // public eventLoad () {
-    //     createjs.Sound.play("loop", createjs.Sound.INTERRUPT_ANY, 0, 0, -1, 0.2);
-    // }
+    public eventLoad() {
+        createjs.Sound.play(Game.ambientSound, createjs.Sound.INTERRUPT_ANY, 0, 0, -1, 0.2);
+    }
 }
