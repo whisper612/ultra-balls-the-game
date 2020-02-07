@@ -65,8 +65,8 @@ export class Game extends Container {
         Sound.registerSound("/resources/assets/sounds/destroy.mp3", Game.destroySound);
         Sound.registerSound("/resources/assets/sounds/press.mp3", Game.pressSound);
         this.addChild(this.FIELD);
-        createjs.Sound.on("fileload", this.eventLoad, this);
-        Game.instanceAmbient = createjs.Sound.play("/resources/assets/sounds/ambient.mp3", { loop: 2 , duration: 5});
+        // createjs.Sound.on("fileload", this.eventLoad, this);
+        // Game.instanceAmbient = createjs.Sound.play("/resources/assets/sounds/ambient.mp3", { loop: 2 , duration: 5});
         // Game.instanceAmbient.on("loop", this.handleSoundLoop);
     }
 
@@ -80,7 +80,7 @@ export class Game extends Container {
         // public dropTiles() {
     }
 
-    public eventLoad () {
-        createjs.Sound.play("loop", createjs.Sound.INTERRUPT_ANY, 0, 0, -1, 0.2);
-    }
+    // public eventLoad () {
+    //     createjs.Sound.play("loop", createjs.Sound.INTERRUPT_ANY, 0, 0, -1, 0.2);
+    // }
 }
