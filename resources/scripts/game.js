@@ -52,9 +52,9 @@ define(["require", "exports", "./field.js", "./button.js"], function (require, e
             Sound.registerSound("/resources/assets/sounds/destroy.mp3", Game.destroySound);
             Sound.registerSound("/resources/assets/sounds/press.mp3", Game.pressSound);
             _this.addChild(_this.FIELD);
-            createjs.Sound.on("fileload", _this.eventLoad, _this);
-            Game.instanceAmbient = createjs.Sound.play("/resources/assets/sounds/ambient.mp3", { loop: 2, duration: 5 });
             return _this;
+            // createjs.Sound.on("fileload", this.eventLoad, this);
+            // Game.instanceAmbient = createjs.Sound.play("/resources/assets/sounds/ambient.mp3", { loop: 2 , duration: 5});
             // Game.instanceAmbient.on("loop", this.handleSoundLoop);
         }
         Game.prototype.eventKeyboardInput = function (event) {
@@ -65,9 +65,6 @@ define(["require", "exports", "./field.js", "./button.js"], function (require, e
                 this.FIELD.dropTiles();
             }
             // public dropTiles() {
-        };
-        Game.prototype.eventLoad = function () {
-            createjs.Sound.play("loop", createjs.Sound.INTERRUPT_ANY, 0, 0, -1, 0.2);
         };
         // Params
         Game.WIDTH = 720;
