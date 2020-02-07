@@ -102,21 +102,21 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
         };
         Field.prototype.dropTiles = function () {
             do {
-                var xeyviyCounter = 0;
+                var twinsCounter = 0;
                 for (var j = 0; j < this.tiles.length; j++) {
                     for (var i = this.tiles[j].length - 1; i >= 0; i--) {
                         if (this.tiles[i][j].type == 0) {
                             if (this.tiles[i - 1]) {
                                 if (this.tiles[i - 1][j].type != 0)
-                                    xeyviyCounter += 1;
+                                    twinsCounter += 1;
                                 this.tiles[i][j].setType(this.tiles[i - 1][j].type);
                                 this.tiles[i - 1][j].setType(0);
                             }
                         }
                     }
                 }
-            } while (xeyviyCounter > 0);
-            // console.log(xeyviyCounter > 0);
+            } while (twinsCounter > 0);
+            // console.log(twinsCounter > 0);
             setTimeout(function () {
                 this.generateTiles();
             }.bind(this), 500);
@@ -154,6 +154,7 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
             // this.switchInteractive();
             setTimeout(function () {
                 this.dropTiles();
+                createjs.Sound.play(game_js_1.Game.destroySound);
             }.bind(this), 500);
         };
         Field.prototype.switchInteractive = function (interactive) {

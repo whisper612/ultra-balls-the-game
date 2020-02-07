@@ -18,6 +18,7 @@ define(["require", "exports", "./field.js", "./button.js"], function (require, e
     var Text = PIXI.Text;
     var TextStyle = PIXI.TextStyle;
     var Container = PIXI.Container;
+    var Sound = createjs.Sound;
     var Game = /** @class */ (function (_super) {
         __extends(Game, _super);
         function Game(resources) {
@@ -46,8 +47,15 @@ define(["require", "exports", "./field.js", "./button.js"], function (require, e
             _this.addChild(Game.SCORE_TEXT);
             _this.addChild(_this.startButton);
             _this.addChild(_this.settingsButton);
+            Sound.registerSound("/resources/assets/sounds/select.mp3", Game.selectSound);
+            Sound.registerSound("/resources/assets/sounds/unselect.mp3", Game.unselectSound);
+            Sound.registerSound("/resources/assets/sounds/destroy.mp3", Game.destroySound);
+            Sound.registerSound("/resources/assets/sounds/press.mp3", Game.pressSound);
             _this.addChild(_this.FIELD);
+            createjs.Sound.on("fileload", _this.eventLoad, _this);
+            Game.instanceAmbient = createjs.Sound.play("/resources/assets/sounds/ambient.mp3", { loop: 2, duration: 5 });
             return _this;
+            // Game.instanceAmbient.on("loop", this.handleSoundLoop);
         }
         Game.prototype.eventKeyboardInput = function (event) {
             if (event.keyCode == 32 && event.type == 'keydown') {
@@ -58,10 +66,17 @@ define(["require", "exports", "./field.js", "./button.js"], function (require, e
             }
             // public dropTiles() {
         };
+        Game.prototype.eventLoad = function () {
+            createjs.Sound.play("loop", createjs.Sound.INTERRUPT_ANY, 0, 0, -1, 0.2);
+        };
         // Params
         Game.WIDTH = 720;
         Game.HEIGHT = 1280;
         Game.SCORE = 0;
+        Game.selectSound = "Select";
+        Game.unselectSound = "Unselect";
+        Game.destroySound = "Destroy";
+        Game.pressSound = "Press";
         return Game;
     }(Container));
     exports.Game = Game;

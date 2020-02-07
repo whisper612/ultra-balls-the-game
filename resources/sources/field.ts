@@ -104,14 +104,14 @@ export class Field extends Container {
 
     public dropTiles() {
         do {
-            var xeyviyCounter = 0;
+            var twinsCounter = 0;
             for (let j = 0; j < this.tiles.length; j++) {
                 for (let i = this.tiles[j].length - 1; i >= 0; i--) {
                     if (this.tiles[i][j].type == 0)
                     {
                         if (this.tiles[i - 1])
                         {
-                            if (this.tiles[i - 1][j].type != 0) xeyviyCounter += 1;
+                            if (this.tiles[i - 1][j].type != 0) twinsCounter += 1;
                             this.tiles[i][j].setType(this.tiles[i - 1][j].type);
                             this.tiles[i - 1][j].setType(0);
                         }
@@ -119,8 +119,8 @@ export class Field extends Container {
                     }
                 }
             }
-        } while (xeyviyCounter > 0);
-        // console.log(xeyviyCounter > 0);
+        } while (twinsCounter > 0);
+        // console.log(twinsCounter > 0);
         setTimeout(function() {
             this.generateTiles();
         }.bind(this), 500);
@@ -164,6 +164,7 @@ export class Field extends Container {
         // this.switchInteractive();
         setTimeout(function () {
             this.dropTiles();
+            createjs.Sound.play(Game.destroySound);
         }.bind(this), 500);       
     }
 

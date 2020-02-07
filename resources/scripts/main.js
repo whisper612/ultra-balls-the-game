@@ -18,6 +18,11 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
     loader.add("menuButtonPress", "/resources/assets/images/buttons/menuButtonPress.png");
     loader.add("lvlNormal", "/resources/assets/images/buttons/lvlNormal.png");
     loader.add("lvlPress", "/resources/assets/images/buttons/lvlPress.png");
+    loader.add("selectSound", "/resources/assets/sounds/select.mp3");
+    loader.add("unselectSound", "/resources/assets/sounds/unselect.mp3");
+    loader.add("destroySound", "/resources/assets/sounds/destroy.mp3");
+    loader.add("pressSound", "/resources/assets/sounds/press.mp3");
+    loader.add("ambientSound", "/resources/assets/sounds/ambient.mp3");
     loader.load(setup);
     // Create a Pixi Application
     var app = new Application({

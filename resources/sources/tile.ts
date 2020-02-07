@@ -112,6 +112,7 @@ export class Tile extends Container {
                 this.setState(this.States.SELECTED);
                 this.item.alpha = this.pressedAlpha;
                 this._field.highlightNeighbours(this);
+                createjs.Sound.play(Game.selectSound);
             }
             else
             {
@@ -128,6 +129,7 @@ export class Tile extends Container {
             this.setState(this.States.IDLE);
             this.item.alpha = 1;
             this._field.unHighlightNeighbours(this);
+            createjs.Sound.play(Game.unselectSound);
         }
 
         public swap() {

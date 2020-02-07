@@ -3,6 +3,7 @@ import Sprite = PIXI.Sprite;
 import Text = PIXI.Text;
 import TextStyle = PIXI.TextStyle;
 import Container = PIXI.Container;
+import Sound = createjs.Sound;
 import { Field } from "./field.js";
 import { MenuButton } from "./button.js"
 
@@ -12,13 +13,20 @@ export class Game extends Container {
     public static WIDTH: number = 720;
     public static HEIGHT: number = 1280;
     public static SCORE: number = 0;
-    public static RES: any; 
+    public static RES: any;
 
     private FIELD: Field;
     private backgroundSprite: Sprite;
     public static SCORE_TEXT: Text;
     public startButton: MenuButton;
     public settingsButton: MenuButton;
+
+    public static selectSound: any = "Select";
+    public static unselectSound: any = "Unselect"
+    public static destroySound: any = "Destroy"
+    public static pressSound: any = "Press"
+    public static instanceAmbient: any;
+    
 
     constructor(resources: any) {
         super();
@@ -52,7 +60,14 @@ export class Game extends Container {
         this.addChild(Game.SCORE_TEXT);
         this.addChild(this.startButton);
         this.addChild(this.settingsButton);
+        Sound.registerSound("/resources/assets/sounds/select.mp3", Game.selectSound);
+        Sound.registerSound("/resources/assets/sounds/unselect.mp3", Game.unselectSound);
+        Sound.registerSound("/resources/assets/sounds/destroy.mp3", Game.destroySound);
+        Sound.registerSound("/resources/assets/sounds/press.mp3", Game.pressSound);
         this.addChild(this.FIELD);
+        createjs.Sound.on("fileload", this.eventLoad, this);
+        Game.instanceAmbient = createjs.Sound.play("/resources/assets/sounds/ambient.mp3", { loop: 2 , duration: 5});
+        // Game.instanceAmbient.on("loop", this.handleSoundLoop);
     }
 
     public eventKeyboardInput(event: KeyboardEvent): void {
@@ -63,5 +78,9 @@ export class Game extends Container {
             this.FIELD.dropTiles();
         }
         // public dropTiles() {
+    }
+
+    public eventLoad () {
+        createjs.Sound.play("loop", createjs.Sound.INTERRUPT_ANY, 0, 0, -1, 0.2);
     }
 }

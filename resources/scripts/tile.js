@@ -91,6 +91,7 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
                 this.setState(this.States.SELECTED);
                 this.item.alpha = this.pressedAlpha;
                 this._field.highlightNeighbours(this);
+                createjs.Sound.play(game_js_1.Game.selectSound);
             }
             else {
                 this.swap();
@@ -103,6 +104,7 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             this.setState(this.States.IDLE);
             this.item.alpha = 1;
             this._field.unHighlightNeighbours(this);
+            createjs.Sound.play(game_js_1.Game.unselectSound);
         };
         Tile.prototype.swap = function () {
             if (this.highlighted) {
