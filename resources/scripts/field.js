@@ -20,8 +20,8 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
         function Field() {
             var _this = _super.call(this) || this;
             _this.matches = [];
-            _this.generateField();
             return _this;
+            // this.generateField();
         }
         Field.prototype.generateField = function () {
             this.tiles = null;
@@ -34,18 +34,23 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                 for (var j = 0; j < 8; j++) {
                     var type = Math.floor(Math.random() * 6) + 1;
                     this.tiles[i][j] = new tile_js_1.Tile(this, type, [i, j]);
+                    this.tiles[i][j].setType(type, 1.5, 8);
                     this.tiles[i][j].position.set(paddingX + j * tileSize, paddingY + i * tileSize);
                     this.addChild(this.tiles[i][j]);
                 }
             }
-            if (this.findMatches().length > 0) {
-                this.switchInteractive(false);
-                setTimeout(function () {
-                    this.destroyMatches(this.findMatches());
-                }.bind(this), 500);
+            setTimeout(function () {
+                this.animateDestroy(this.findMatches());
+            }.bind(this), 1700);
+        };
+        Field.prototype.destroyField = function () {
+            if (this.tiles == null)
+                return;
+            for (var i = 0; i < 8; i++) {
+                for (var j = 0; j < 8; j++) {
+                    this.tiles[i][j].destroy();
+                }
             }
-            else
-                this.switchInteractive(true);
         };
         Field.prototype.setSelected = function (tile) {
             this.selectedTile = tile;
@@ -101,38 +106,52 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                 left.unHighlight();
         };
         Field.prototype.dropTiles = function () {
-            do {
-                var twinsCounter = 0;
-                for (var j = 0; j < this.tiles.length; j++) {
-                    for (var i = this.tiles[j].length - 1; i >= 0; i--) {
-                        if (this.tiles[i][j].type == 0) {
-                            if (this.tiles[i - 1]) {
-                                if (this.tiles[i - 1][j].type != 0)
-                                    twinsCounter += 1;
-                                this.tiles[i][j].setType(this.tiles[i - 1][j].type);
-                                this.tiles[i - 1][j].setType(0);
-                            }
+            var twinsCounter = this.dropLine();
+            setTimeout(function () {
+                if (twinsCounter > 0)
+                    this.dropTiles();
+                else
+                    this.generateTiles();
+            }.bind(this), 200);
+        };
+        Field.prototype.dropLine = function () {
+            var twinsCounter = 0;
+            for (var j = 0; j < this.tiles.length; j++) {
+                for (var i = this.tiles[j].length - 1; i >= 0; i--) {
+                    if (this.tiles[i][j].type == 0) {
+                        if (this.tiles[i - 1]) {
+                            if (this.tiles[i - 1][j].type != 0)
+                                twinsCounter += 1;
+                            this.tiles[i][j].setType(this.tiles[i - 1][j].type, 0.2);
+                            this.tiles[i - 1][j].setType(0);
                         }
                     }
                 }
-            } while (twinsCounter > 0);
-            // console.log(twinsCounter > 0);
-            setTimeout(function () {
-                this.generateTiles();
-            }.bind(this), 500);
+            }
+            return twinsCounter;
         };
         Field.prototype.generateTiles = function () {
             for (var i = 0; i < this.tiles.length; i++) {
                 for (var j = 0; j < this.tiles[i].length; j++) {
                     if (this.tiles[i][j].type == 0)
-                        this.tiles[i][j].setType(Math.floor(Math.random() * 6) + 1);
+                        this.tiles[i][j].setType(Math.floor(Math.random() * 6) + 1, 0.5, 2);
                 }
             }
-            if (this.findMatches().length > 0) {
+            setTimeout(function () {
+                this.animateDestroy(this.findMatches());
+            }.bind(this), 500);
+        };
+        Field.prototype.animateDestroy = function (matches) {
+            if (matches.length > 0) {
                 this.switchInteractive(false);
+                for (var i = 0; i < matches.length; i++) {
+                    for (var j = 0; j < matches[i].length; j++) {
+                        TweenLite.to(matches[i][j].item, 0.4, { alpha: 0 });
+                    }
+                }
                 setTimeout(function () {
-                    this.destroyMatches(this.findMatches());
-                }.bind(this), 500);
+                    this.destroyMatches(matches);
+                }.bind(this), 400);
             }
             else
                 this.switchInteractive(true);
@@ -152,9 +171,9 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
             }
             console.log("Combo: " + count + "element.");
             // this.switchInteractive();
+            createjs.Sound.play(game_js_1.Game.destroySound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.5);
             setTimeout(function () {
                 this.dropTiles();
-                createjs.Sound.play(game_js_1.Game.destroySound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.5);
             }.bind(this), 500);
         };
         Field.prototype.switchInteractive = function (interactive) {

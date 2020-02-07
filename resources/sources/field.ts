@@ -4,6 +4,7 @@ import Container = PIXI.Container;
 import { MenuButton } from "./button.js";
 import { Game } from "./game.js";
 import { Tile } from "./tile.js"
+declare let TweenLite: any;
 
 export class Field extends Container {
 
@@ -14,7 +15,7 @@ export class Field extends Container {
 
     constructor() {
         super();
-        this.generateField();
+        // this.generateField();
     }
 
     public generateField() {
@@ -30,20 +31,25 @@ export class Field extends Container {
             for (let j = 0; j < 8; j++) {
                 let type = Math.floor(Math.random() * 6) + 1
                 this.tiles[i][j] = new Tile(this, type, [i, j]);
+                this.tiles[i][j].setType(type, 1.5, 8);
                 this.tiles[i][j].position.set(paddingX + j * tileSize, paddingY + i * tileSize);
                 this.addChild(this.tiles[i][j]);
             }
         }
 
-        if (this.findMatches().length > 0)
-        {
-            this.switchInteractive(false);
-            setTimeout(function () {
-                this.destroyMatches(this.findMatches());
-            }.bind(this), 500);
+        setTimeout(function () {
+            this.animateDestroy(this.findMatches());
+        }.bind(this), 1700);
+    }
+
+    public destroyField()
+    {
+        if (this.tiles == null) return;
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                this.tiles[i][j].destroy();
+            }
         }
-        else
-            this.switchInteractive(true);
     }
 
     public setSelected(tile: Tile)
@@ -103,27 +109,28 @@ export class Field extends Container {
     }
 
     public dropTiles() {
-        do {
-            var twinsCounter = 0;
-            for (let j = 0; j < this.tiles.length; j++) {
-                for (let i = this.tiles[j].length - 1; i >= 0; i--) {
-                    if (this.tiles[i][j].type == 0)
-                    {
-                        if (this.tiles[i - 1])
-                        {
-                            if (this.tiles[i - 1][j].type != 0) twinsCounter += 1;
-                            this.tiles[i][j].setType(this.tiles[i - 1][j].type);
-                            this.tiles[i - 1][j].setType(0);
-                        }
-    
+        var twinsCounter = this.dropLine();
+        setTimeout(function () {
+            if (twinsCounter > 0) this.dropTiles();
+            else this.generateTiles();
+        }.bind(this), 200);
+    }
+
+    public dropLine()
+    {
+        var twinsCounter = 0;
+        for (let j = 0; j < this.tiles.length; j++) {
+            for (let i = this.tiles[j].length - 1; i >= 0; i--) {
+                if (this.tiles[i][j].type == 0) {
+                    if (this.tiles[i - 1]) {
+                        if (this.tiles[i - 1][j].type != 0) twinsCounter += 1;
+                        this.tiles[i][j].setType(this.tiles[i - 1][j].type, 0.2);
+                        this.tiles[i - 1][j].setType(0);
                     }
                 }
             }
-        } while (twinsCounter > 0);
-        // console.log(twinsCounter > 0);
-        setTimeout(function() {
-            this.generateTiles();
-        }.bind(this), 500);
+        }
+        return twinsCounter;
     }
 
     public generateTiles()
@@ -131,19 +138,31 @@ export class Field extends Container {
         for (var i = 0; i < this.tiles.length; i++) {
             for (var j = 0; j < this.tiles[i].length; j++) {
                 if (this.tiles[i][j].type == 0)
-                    this.tiles[i][j].setType(Math.floor(Math.random() * 6) + 1);
+                    this.tiles[i][j].setType(Math.floor(Math.random() * 6) + 1, 0.5, 2);
             }
         }
-        if (this.findMatches().length > 0)
-        {
+        setTimeout(function () {
+            this.animateDestroy(this.findMatches());
+        }.bind(this), 500);
+    }
+
+    public animateDestroy(matches: any) {
+        if (matches.length > 0) {
             this.switchInteractive(false);
+            for (var i = 0; i < matches.length; i++) {
+                for (var j = 0; j < matches[i].length; j++) {
+                    TweenLite.to(matches[i][j].item, 0.4, { alpha: 0 });
+                }
+            }
+
+
             setTimeout(function () {
-                this.destroyMatches(this.findMatches());
-            }.bind(this), 500);
-        }
-        else
+                this.destroyMatches(matches);
+            }.bind(this), 400);
+        } else
             this.switchInteractive(true);
     }
+
 
     public destroyMatches(matches: Tile[][]) {
         
@@ -162,9 +181,9 @@ export class Field extends Container {
 
         console.log("Combo: " + count + "element.");
         // this.switchInteractive();
+        createjs.Sound.play(Game.destroySound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.5);
         setTimeout(function () {
             this.dropTiles();
-            createjs.Sound.play(Game.destroySound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.5);
         }.bind(this), 500);       
     }
 

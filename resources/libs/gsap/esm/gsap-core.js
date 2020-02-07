@@ -3683,7 +3683,7 @@ var _gsap = {
   },
   registerEffect: function registerEffect(_ref) {
     var name = _ref.name,
-        effect = _ref.effect,
+        effect = _refect,
         plugins = _ref.plugins,
         defaults = _ref.defaults,
         extendTimeline = _ref.extendTimeline;

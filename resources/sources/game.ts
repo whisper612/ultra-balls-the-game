@@ -52,6 +52,10 @@ export class Game extends Container {
 
         this.startButton = new MenuButton("Start");
         this.startButton.position.set(Game.WIDTH / 4, 1100);
+        this.startButton.on('click', function () {
+            this.FIELD.destroyField();
+            this.FIELD.generateField();
+        }.bind(this));
         
         this.settingsButton = new MenuButton("Settings");
         this.settingsButton.position.set(Game.WIDTH * 0.75, 1100);
@@ -61,26 +65,20 @@ export class Game extends Container {
         this.addChild(this.startButton);
         this.addChild(this.settingsButton);
 
-        Sound.on("fileload", this.eventLoad, this);
+        Sound.registerSound("/resources/assets/sounds/ambient.mp3", Game.ambientSound);
         Sound.registerSound("/resources/assets/sounds/select.mp3", Game.selectSound);
         Sound.registerSound("/resources/assets/sounds/unselect.mp3", Game.unselectSound);
         Sound.registerSound("/resources/assets/sounds/destroy.mp3", Game.destroySound);
         Sound.registerSound("/resources/assets/sounds/press.mp3", Game.pressSound);
-        Sound.registerSound("/resources/assets/sounds/ambient.mp3", Game.ambientSound);
+        Sound.on("fileload", this.eventLoad, Game.ambientSound);
         this.addChild(this.FIELD);
     }
 
     public eventKeyboardInput(event: KeyboardEvent): void {
-        if (event.keyCode == 32 && event.type == 'keydown') {
-            this.FIELD.destroyMatches(this.FIELD.findMatches());
-        }
-        if (event.keyCode == 17 && event.type == 'keydown') {
-            this.FIELD.dropTiles();
-        }
         // public dropTiles() {
     }
 
     public eventLoad() {
-        createjs.Sound.play(Game.ambientSound, createjs.Sound.INTERRUPT_ANY, 0, 0, -1, 0.35);
+        createjs.Sound.play(Game.ambientSound, createjs.Sound.INTERRUPT_ANY, 0, 0, -1, 0.5);
     }
 }

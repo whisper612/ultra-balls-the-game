@@ -18,11 +18,6 @@ loader.add("menuButtonNormal", "/resources/assets/images/buttons/menuButtonNorma
 loader.add("menuButtonPress", "/resources/assets/images/buttons/menuButtonPress.png");
 loader.add("lvlNormal", "/resources/assets/images/buttons/lvlNormal.png");
 loader.add("lvlPress", "/resources/assets/images/buttons/lvlPress.png");
-loader.add("selectSound", "/resources/assets/sounds/select.mp3");
-loader.add("unselectSound", "/resources/assets/sounds/unselect.mp3");
-loader.add("destroySound", "/resources/assets/sounds/destroy.mp3");
-loader.add("pressSound", "/resources/assets/sounds/press.mp3");
-loader.add("ambientSound", "/resources/assets/sounds/ambient.mp3");
 loader.load(setup);
 
 // Create a Pixi Application
@@ -49,9 +44,11 @@ eventListenerResize();
 window.onresize = eventListenerResize;
 
 // Add the canvas that Pixi automatically created
-document.body.appendChild(app.view);
 
 function setup(loader: Loader, resources: any): void {
+    
+    document.body.appendChild(app.view);
+    
     let game: Game = new Game(resources);
     app.stage.addChild(game);
     document.addEventListener('keydown', game.eventKeyboardInput.bind(game));

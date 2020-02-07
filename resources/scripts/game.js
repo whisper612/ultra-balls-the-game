@@ -41,32 +41,30 @@ define(["require", "exports", "./field.js", "./button.js"], function (require, e
             Game.SCORE_TEXT.position.set(Game.WIDTH / 2, 250);
             _this.startButton = new button_js_1.MenuButton("Start");
             _this.startButton.position.set(Game.WIDTH / 4, 1100);
+            _this.startButton.on('click', function () {
+                this.FIELD.destroyField();
+                this.FIELD.generateField();
+            }.bind(_this));
             _this.settingsButton = new button_js_1.MenuButton("Settings");
             _this.settingsButton.position.set(Game.WIDTH * 0.75, 1100);
             _this.addChild(_this.backgroundSprite);
             _this.addChild(Game.SCORE_TEXT);
             _this.addChild(_this.startButton);
             _this.addChild(_this.settingsButton);
-            Sound.on("fileload", _this.eventLoad, _this);
+            Sound.registerSound("/resources/assets/sounds/ambient.mp3", Game.ambientSound);
             Sound.registerSound("/resources/assets/sounds/select.mp3", Game.selectSound);
             Sound.registerSound("/resources/assets/sounds/unselect.mp3", Game.unselectSound);
             Sound.registerSound("/resources/assets/sounds/destroy.mp3", Game.destroySound);
             Sound.registerSound("/resources/assets/sounds/press.mp3", Game.pressSound);
-            Sound.registerSound("/resources/assets/sounds/ambient.mp3", Game.ambientSound);
+            Sound.on("fileload", _this.eventLoad, Game.ambientSound);
             _this.addChild(_this.FIELD);
             return _this;
         }
         Game.prototype.eventKeyboardInput = function (event) {
-            if (event.keyCode == 32 && event.type == 'keydown') {
-                this.FIELD.destroyMatches(this.FIELD.findMatches());
-            }
-            if (event.keyCode == 17 && event.type == 'keydown') {
-                this.FIELD.dropTiles();
-            }
             // public dropTiles() {
         };
         Game.prototype.eventLoad = function () {
-            createjs.Sound.play(Game.ambientSound, createjs.Sound.INTERRUPT_ANY, 0, 0, -1, 0.35);
+            createjs.Sound.play(Game.ambientSound, createjs.Sound.INTERRUPT_ANY, 0, 0, -1, 0.5);
         };
         // Params
         Game.WIDTH = 720;
