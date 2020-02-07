@@ -16,6 +16,7 @@
         "resources/libs/pixi.js.d.ts",
         "resources/libs/createjs/createjs-lib.d.ts",
         "resources/libs/createjs/preloadjs.d.ts",
-        "resources/libs/createjs/soundjs.d.ts"
+        "resources/libs/createjs/soundjs.d.ts",
+        "resources/libs/gsap/index.d.ts"
     ]
 }
