@@ -1,6 +1,7 @@
 import Application = PIXI.Application;
 import Loader = PIXI.Loader;
 import {Game} from "./game.js"
+import {Button} from "./button.js"
 
 const loader: Loader = new Loader();
 
@@ -18,6 +19,8 @@ loader.add("menuButtonNormal", "/resources/assets/images/buttons/menuButtonNorma
 loader.add("menuButtonPress", "/resources/assets/images/buttons/menuButtonPress.png");
 loader.add("lvlNormal", "/resources/assets/images/buttons/lvlNormal.png");
 loader.add("lvlPress", "/resources/assets/images/buttons/lvlPress.png");
+loader.add("playButtonNormal", "/resources/assets/images/buttons/playButtonNormal.png");
+loader.add("playButtonPressed", "/resources/assets/images/buttons/playButtonPressed.png");
 loader.load(setup);
 
 // Create a Pixi Application
@@ -27,6 +30,8 @@ let app: Application = new Application({
     transparent: true,
     resolution: 1
 });
+
+let loadGameButton: Button;
 
 // App sizing
 function eventListenerResize(): void {
@@ -48,9 +53,16 @@ window.onresize = eventListenerResize;
 function setup(loader: Loader, resources: any): void {
     
     document.body.appendChild(app.view);
+
+    loadGameButton = new Button(resources.playButtonNormal.texture, resources.playButtonPressed.texture);
+    loadGameButton.position.set(Game.WIDTH / 2, Game.HEIGHT / 2);
+    loadGameButton.on('click', function () {        
+        let game: Game = new Game(resources);
+        app.stage.addChild(game);
+        document.addEventListener('keydown', game.eventKeyboardInput.bind(game));
+        document.addEventListener('keyup', game.eventKeyboardInput.bind(game));
+    });
+
+    app.stage.addChild(loadGameButton);
     
-    let game: Game = new Game(resources);
-    app.stage.addChild(game);
-    document.addEventListener('keydown', game.eventKeyboardInput.bind(game));
-    document.addEventListener('keyup', game.eventKeyboardInput.bind(game));
 }

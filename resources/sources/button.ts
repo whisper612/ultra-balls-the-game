@@ -15,8 +15,8 @@ export class Button extends Container {
     protected text: Text;
     protected pressedAlpha: number = 0.4; 
 
-    constructor(_norm : Texture, _pressed: Texture, _text: string, 
-        _fonstSize: number, _fill: string , _align: string) {
+    constructor(_norm : Texture, _pressed: Texture, _text: string = "", 
+        _fonstSize: number = 18, _fill: string = "#ffffff" , _align: string = "center") {
         super();
         // Stock button params
         this.sprite = new Sprite();

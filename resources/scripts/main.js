@@ -1,4 +1,4 @@
-define(["require", "exports", "./game.js"], function (require, exports, game_js_1) {
+define(["require", "exports", "./game.js", "./button.js"], function (require, exports, game_js_1, button_js_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Application = PIXI.Application;
@@ -18,6 +18,8 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
     loader.add("menuButtonPress", "/resources/assets/images/buttons/menuButtonPress.png");
     loader.add("lvlNormal", "/resources/assets/images/buttons/lvlNormal.png");
     loader.add("lvlPress", "/resources/assets/images/buttons/lvlPress.png");
+    loader.add("playButtonNormal", "/resources/assets/images/buttons/playButtonNormal.png");
+    loader.add("playButtonPressed", "/resources/assets/images/buttons/playButtonPressed.png");
     loader.load(setup);
     // Create a Pixi Application
     var app = new Application({
@@ -26,6 +28,7 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
         transparent: true,
         resolution: 1
     });
+    var loadGameButton;
     // App sizing
     function eventListenerResize() {
         app.renderer.autoResize = true;
@@ -42,10 +45,15 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
     // Add the canvas that Pixi automatically created
     function setup(loader, resources) {
         document.body.appendChild(app.view);
-        var game = new game_js_1.Game(resources);
-        app.stage.addChild(game);
-        document.addEventListener('keydown', game.eventKeyboardInput.bind(game));
-        document.addEventListener('keyup', game.eventKeyboardInput.bind(game));
+        loadGameButton = new button_js_1.Button(resources.playButtonNormal.texture, resources.playButtonPressed.texture);
+        loadGameButton.position.set(game_js_1.Game.WIDTH / 2, game_js_1.Game.HEIGHT / 2);
+        loadGameButton.on('click', function () {
+            var game = new game_js_1.Game(resources);
+            app.stage.addChild(game);
+            document.addEventListener('keydown', game.eventKeyboardInput.bind(game));
+            document.addEventListener('keyup', game.eventKeyboardInput.bind(game));
+        });
+        app.stage.addChild(loadGameButton);
     }
 });
 //# sourceMappingURL=main.js.map

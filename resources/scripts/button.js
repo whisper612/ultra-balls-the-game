@@ -21,6 +21,10 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
     var Button = /** @class */ (function (_super) {
         __extends(Button, _super);
         function Button(_norm, _pressed, _text, _fonstSize, _fill, _align) {
+            if (_text === void 0) { _text = ""; }
+            if (_fonstSize === void 0) { _fonstSize = 18; }
+            if (_fill === void 0) { _fill = "#ffffff"; }
+            if (_align === void 0) { _align = "center"; }
             var _this = _super.call(this) || this;
             _this.pressedAlpha = 0.4;
             // Stock button params
