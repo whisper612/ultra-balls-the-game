@@ -40,17 +40,18 @@ define(["require", "exports", "./field.js", "./button.js"], function (require, e
             Game.SCORE_TEXT.anchor.set(0.5);
             Game.SCORE_TEXT.position.set(Game.WIDTH / 2, 250);
             _this.startButton = new button_js_1.MenuButton("Start");
-            _this.startButton.position.set(Game.WIDTH / 4, 1100);
+            _this.startButton.position.set(Game.WIDTH / 2, 1100);
             _this.startButton.on('click', function () {
                 this.FIELD.destroyField();
                 this.FIELD.generateField();
             }.bind(_this));
             _this.settingsButton = new button_js_1.MenuButton("Settings");
             _this.settingsButton.position.set(Game.WIDTH * 0.75, 1100);
+            _this.backgroundSprite.alpha = 0.6;
             _this.addChild(_this.backgroundSprite);
-            _this.addChild(Game.SCORE_TEXT);
-            _this.addChild(_this.startButton);
-            _this.addChild(_this.settingsButton);
+            // this.addChild(Game.SCORE_TEXT);
+            // this.addChild(this.startButton);
+            // this.addChild(this.settingsButton);
             Sound.registerSound("/resources/assets/sounds/ambient.mp3", Game.ambientSound);
             Sound.registerSound("/resources/assets/sounds/select.mp3", Game.selectSound);
             Sound.registerSound("/resources/assets/sounds/unselect.mp3", Game.unselectSound);
@@ -58,6 +59,11 @@ define(["require", "exports", "./field.js", "./button.js"], function (require, e
             Sound.registerSound("/resources/assets/sounds/press.mp3", Game.pressSound);
             Sound.on("fileload", _this.eventLoad, Game.ambientSound);
             _this.addChild(_this.FIELD);
+            setTimeout(function () {
+                this.addChild(Game.SCORE_TEXT);
+                this.FIELD.destroyField();
+                this.FIELD.generateField();
+            }.bind(_this), 200);
             return _this;
         }
         Game.prototype.eventKeyboardInput = function (event) {

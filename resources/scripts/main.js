@@ -23,10 +23,10 @@ define(["require", "exports", "./game.js", "./button.js"], function (require, ex
     loader.load(setup);
     // Create a Pixi Application
     var app = new Application({
-        backgroundColor: 0x03172C,
+        // backgroundColor: 0x210f39,
         antialias: true,
         transparent: true,
-        resolution: 1
+        resolution: 1,
     });
     var loadGameButton;
     // App sizing
@@ -52,6 +52,7 @@ define(["require", "exports", "./game.js", "./button.js"], function (require, ex
             app.stage.addChild(game);
             document.addEventListener('keydown', game.eventKeyboardInput.bind(game));
             document.addEventListener('keyup', game.eventKeyboardInput.bind(game));
+            app.stage.removeChild(loadGameButton);
         });
         app.stage.addChild(loadGameButton);
     }

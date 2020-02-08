@@ -51,19 +51,20 @@ export class Game extends Container {
         Game.SCORE_TEXT.position.set(Game.WIDTH / 2, 250);
 
         this.startButton = new MenuButton("Start");
-        this.startButton.position.set(Game.WIDTH / 4, 1100);
+        this.startButton.position.set(Game.WIDTH / 2, 1100);
         this.startButton.on('click', function () {
             this.FIELD.destroyField();
             this.FIELD.generateField();
         }.bind(this));
+
         
         this.settingsButton = new MenuButton("Settings");
         this.settingsButton.position.set(Game.WIDTH * 0.75, 1100);
-        
+        this.backgroundSprite.alpha = 0.6;
         this.addChild(this.backgroundSprite);
-        this.addChild(Game.SCORE_TEXT);
-        this.addChild(this.startButton);
-        this.addChild(this.settingsButton);
+        // this.addChild(Game.SCORE_TEXT);
+        // this.addChild(this.startButton);
+        // this.addChild(this.settingsButton);
 
         Sound.registerSound("/resources/assets/sounds/ambient.mp3", Game.ambientSound);
         Sound.registerSound("/resources/assets/sounds/select.mp3", Game.selectSound);
@@ -72,6 +73,12 @@ export class Game extends Container {
         Sound.registerSound("/resources/assets/sounds/press.mp3", Game.pressSound);
         Sound.on("fileload", this.eventLoad, Game.ambientSound);
         this.addChild(this.FIELD);
+
+        setTimeout(function () {
+            this.addChild(Game.SCORE_TEXT);
+            this.FIELD.destroyField();
+            this.FIELD.generateField();
+        }.bind(this), 200);
     }
 
     public eventKeyboardInput(event: KeyboardEvent): void {

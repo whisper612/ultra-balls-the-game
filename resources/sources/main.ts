@@ -25,10 +25,10 @@ loader.load(setup);
 
 // Create a Pixi Application
 let app: Application = new Application({
-    backgroundColor: 0x03172C,
+    // backgroundColor: 0x210f39,
     antialias: true,
     transparent: true,
-    resolution: 1
+    resolution: 1,
 });
 
 let loadGameButton: Button;
@@ -61,6 +61,7 @@ function setup(loader: Loader, resources: any): void {
         app.stage.addChild(game);
         document.addEventListener('keydown', game.eventKeyboardInput.bind(game));
         document.addEventListener('keyup', game.eventKeyboardInput.bind(game));
+        app.stage.removeChild(loadGameButton);
     });
 
     app.stage.addChild(loadGameButton);
