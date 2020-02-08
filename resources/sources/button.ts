@@ -9,7 +9,7 @@ import { Game } from "./game.js";
 export class Button extends Container {
 
     // Params
-    private sprite: Sprite;
+    public sprite: Sprite;
     private normalTexture: Texture;
     private pressTexture: Texture;
     protected text: Text;
@@ -51,10 +51,6 @@ export class Button extends Container {
             createjs.Sound.play(Game.pressSound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.5);
             this.setPressStyle();
         }.bind(this));
-
-        this.sprite.on("pointerup", function (): void {
-            this.setNormalStyle();
-        }.bind(this));
         
         this.sprite.on("pointerupoutside", function (): void {
             this.alpha = 1;
@@ -63,8 +59,9 @@ export class Button extends Container {
                 this.setNormalStyle()
             }
         }.bind(this));
-
+        
         this.sprite.on("pointerup", function (): void {
+            this.setNormalStyle();
             this.sprite.interactive = false;
             this.emit("click");
             setTimeout(function() {

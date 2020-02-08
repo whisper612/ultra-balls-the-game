@@ -28,41 +28,20 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
             this.tiles = new Array(8);
             var tileSize = 75;
             var paddingX = (game_js_1.Game.WIDTH - 8 * tileSize) / 2;
-            var paddingY = (game_js_1.Game.HEIGHT - 8 * tileSize) / 2 + 100;
+            var paddingY = (game_js_1.Game.HEIGHT - 8 * tileSize) / 2;
             for (var i = 0; i < 8; i++) {
                 this.tiles[i] = new Array(8);
                 for (var j = 0; j < 8; j++) {
-                    var type = Math.floor(Math.random() * 7) + 1;
+                    var type = Math.floor(Math.random() * 6) + 1;
                     this.tiles[i][j] = new tile_js_1.Tile(this, type, [i, j]);
                     this.tiles[i][j].setType(type, 1.5, 8);
                     this.tiles[i][j].position.set(paddingX + j * tileSize, paddingY + i * tileSize);
                     this.addChild(this.tiles[i][j]);
                 }
             }
-            this.switchInteractive(false);
             setTimeout(function () {
-                this.switchInteractive(false);
                 this.animateDestroy(this.findMatches());
-                this.parent.startTimer();
             }.bind(this), 1700);
-        };
-        Field.prototype.generateTiles = function () {
-            for (var i = 0; i < this.tiles.length; i++) {
-                for (var j = 0; j < this.tiles[i].length; j++) {
-                    if (this.tiles[i][j].type == 0)
-                        this.tiles[i][j].setType(Math.floor(Math.random() * 7) + 1, 0.5, 2);
-                }
-            }
-            setTimeout(function () {
-                if (!game_js_1.Game.GAMEOVER)
-                    this.animateDestroy(this.findMatches());
-                else {
-                    game_js_1.Game.MULT = 0;
-                    console.log("Game is over naxoi");
-                    TweenLite.to(game_js_1.Game.MULT_TEXT, 0.5, { alpha: 0 });
-                    this.switchInteractive(true);
-                }
-            }.bind(this), 500);
         };
         Field.prototype.destroyField = function () {
             if (this.tiles == null)
@@ -133,7 +112,7 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                     this.dropTiles();
                 else
                     this.generateTiles();
-            }.bind(this), 225);
+            }.bind(this), 200);
         };
         Field.prototype.dropLine = function () {
             var twinsCounter = 0;
@@ -151,51 +130,52 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
             }
             return twinsCounter;
         };
+        Field.prototype.generateTiles = function () {
+            for (var i = 0; i < this.tiles.length; i++) {
+                for (var j = 0; j < this.tiles[i].length; j++) {
+                    if (this.tiles[i][j].type == 0)
+                        this.tiles[i][j].setType(Math.floor(Math.random() * 6) + 1, 0.5, 2);
+                }
+            }
+            setTimeout(function () {
+                this.animateDestroy(this.findMatches());
+            }.bind(this), 500);
+        };
         Field.prototype.animateDestroy = function (matches) {
             if (matches.length > 0) {
                 this.switchInteractive(false);
                 for (var i = 0; i < matches.length; i++) {
                     for (var j = 0; j < matches[i].length; j++) {
                         TweenLite.to(matches[i][j].item, 0.4, { alpha: 0, rotation: 2.5 });
-                        TweenLite.to(matches[i][j].item.scale, 0.4, { x: 0, y: 0 });
                     }
                 }
                 createjs.Sound.play(game_js_1.Game.destroySound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 1);
                 setTimeout(function () {
                     this.destroyMatches(matches);
-                }.bind(this), 425);
+                }.bind(this), 400);
             }
-            else {
-                game_js_1.Game.MULT = 0;
-                console.log("Combo is over naxoi");
-                TweenLite.to(game_js_1.Game.MULT_TEXT, 0.5, { alpha: 0 });
+            else
                 this.switchInteractive(true);
-            }
         };
         Field.prototype.destroyMatches = function (matches) {
+            var count = 0;
             for (var i = 0; i < matches.length; i++) {
                 for (var j = 0; j < matches[i].length; j++) {
                     var t = matches[i][j];
-                    game_js_1.Game.MULT += 1;
-                    game_js_1.Game.MULT_TEXT.text = "x" + game_js_1.Game.MULT.toString();
-                    if (game_js_1.Game.MULT == 1) {
-                        TweenLite.to(game_js_1.Game.MULT_TEXT, 0.2, { alpha: 1 });
-                    }
+                    count += 1;
                     // this.tiles[t.pos.x][t.pos.y].destroy();
                     // this.tiles[t.pos.x][t.pos.y] = null;
-                    game_js_1.Game.SCORE += 50 * game_js_1.Game.MULT;
-                    console.log("Sc:" + game_js_1.Game.SCORE);
+                    game_js_1.Game.SCORE += 50 * count;
                     game_js_1.Game.SCORE_TEXT.text = game_js_1.Game.SCORE.toString();
                     this.tiles[t.pos.x][t.pos.y].setType(0);
                 }
             }
-            // Game.MULT *= count;
-            console.log("Combo: " + game_js_1.Game.MULT + "element.");
+            console.log("Combo: " + count + "element.");
             // this.switchInteractive();
             // createjs.Sound.play(Game.destroySound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 1);
             setTimeout(function () {
                 this.dropTiles();
-            }.bind(this), 250);
+            }.bind(this), 500);
         };
         Field.prototype.switchInteractive = function (interactive) {
             for (var i = 0; i < this.tiles.length; i++) {

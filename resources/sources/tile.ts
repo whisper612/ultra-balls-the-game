@@ -26,6 +26,7 @@ export class Tile extends Container {
         Game.RES.dkBlueBall.texture,
         Game.RES.blueBall.texture,
         Game.RES.purpleBall.texture,
+        Game.RES.whiteBall.texture,
     ];
 
     private fieldTextures: Texture[] = [
@@ -115,7 +116,7 @@ export class Tile extends Container {
             this.setState(this.States.SELECTED);
             // this.item.alpha = this.pressedAlpha;
             this._field.highlightNeighbours(this);
-            createjs.Sound.play(Game.selectSound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.1);
+            createjs.Sound.play(Game.selectSound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.05);
 
             
         }
@@ -136,7 +137,7 @@ export class Tile extends Container {
         // this.item.alpha = 1;
         TweenLite.fromTo(this.item, 0.3, { alpha: this.item.alpha }, { alpha: 1 });
         if (playSound) {
-            createjs.Sound.play(Game.unselectSound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.1);
+            createjs.Sound.play(Game.unselectSound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.05);
         }
     }
 
@@ -183,6 +184,7 @@ export class Tile extends Container {
         this.item.texture = this.itemTextures[this.type];
         this.item.alpha = 1;
         this.item.rotation = 0;
+        this.item.scale.set(0.8);
     }
 
     public highlight()

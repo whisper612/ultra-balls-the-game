@@ -7,6 +7,7 @@ const loader: Loader = new Loader();
 
 //add .png to Pixi loader
 loader.add("redBall", "/resources/assets/images/balls/redBall.png");
+loader.add("whiteBall", "/resources/assets/images/balls/whiteBall.png");
 loader.add("orangeBall", "/resources/assets/images/balls/orangeBall.png");
 loader.add("greenBall", "/resources/assets/images/balls/greenBall.png");
 loader.add("dkBlueBall", "/resources/assets/images/balls/dkBlueBall.png");
@@ -21,6 +22,8 @@ loader.add("lvlNormal", "/resources/assets/images/buttons/lvlNormal.png");
 loader.add("lvlPress", "/resources/assets/images/buttons/lvlPress.png");
 loader.add("playButtonNormal", "/resources/assets/images/buttons/playButtonNormal.png");
 loader.add("playButtonPressed", "/resources/assets/images/buttons/playButtonPressed.png");
+loader.add("soundSwitcherOff", "/resources/assets/images/buttons/soundButtonOff.png");
+loader.add("soundSwitcherOn", "/resources/assets/images/buttons/soundButtonOn.png");
 loader.load(setup);
 
 // Create a Pixi Application

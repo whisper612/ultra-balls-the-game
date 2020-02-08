@@ -29,7 +29,6 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
                 game_js_1.Game.RES.dkBlueBall.texture,
                 game_js_1.Game.RES.blueBall.texture,
                 game_js_1.Game.RES.purpleBall.texture,
-                game_js_1.Game.RES.whiteBall.texture,
             ];
             _this.fieldTextures = [
                 game_js_1.Game.RES.field.texture,
@@ -147,7 +146,6 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             this.item.texture = this.itemTextures[this.type];
             this.item.alpha = 1;
             this.item.rotation = 0;
-            this.item.scale.set(0.8);
         };
         Tile.prototype.highlight = function () {
             if (this.background.texture == this.fieldTextures[0]) {

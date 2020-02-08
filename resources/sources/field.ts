@@ -24,12 +24,12 @@ export class Field extends Container {
 
         let tileSize = 75;
         let paddingX = (Game.WIDTH - 8* tileSize) / 2;
-        let paddingY = (Game.HEIGHT - 8 * tileSize) / 2;
+        let paddingY = (Game.HEIGHT - 8 * tileSize) / 2 + 100;
 
         for (let i = 0; i < 8; i++) {
             this.tiles[i] = new Array<Tile>(8);
             for (let j = 0; j < 8; j++) {
-                let type = Math.floor(Math.random() * 6) + 1
+                let type = Math.floor(Math.random() * 7) + 1
                 this.tiles[i][j] = new Tile(this, type, [i, j]);
                 this.tiles[i][j].setType(type, 1.5, 8);
                 this.tiles[i][j].position.set(paddingX + j * tileSize, paddingY + i * tileSize);
@@ -37,9 +37,32 @@ export class Field extends Container {
             }
         }
 
+        this.switchInteractive(false);
         setTimeout(function () {
+            this.switchInteractive(false);
             this.animateDestroy(this.findMatches());
+            this.parent.startTimer();
         }.bind(this), 1700);
+    }
+
+
+    public generateTiles() {
+        for (var i = 0; i < this.tiles.length; i++) {
+            for (var j = 0; j < this.tiles[i].length; j++) {
+                if (this.tiles[i][j].type == 0)
+                    this.tiles[i][j].setType(Math.floor(Math.random() * 7) + 1, 0.5, 2);
+            }
+        }
+        setTimeout(function () {
+            if (!Game.GAMEOVER)
+                this.animateDestroy(this.findMatches());
+            else{
+                Game.MULT = 0;
+                console.log("Game is over naxoi")
+                TweenLite.to(Game.MULT_TEXT, 0.5, { alpha: 0 });
+                this.switchInteractive(true);
+            }
+        }.bind(this), 500);
     }
 
     public destroyField()
@@ -113,7 +136,7 @@ export class Field extends Container {
         setTimeout(function () {
             if (twinsCounter > 0) this.dropTiles();
             else this.generateTiles();
-        }.bind(this), 200);
+        }.bind(this), 225);
     }
 
     public dropLine()
@@ -133,58 +156,55 @@ export class Field extends Container {
         return twinsCounter;
     }
 
-    public generateTiles()
-    {
-        for (var i = 0; i < this.tiles.length; i++) {
-            for (var j = 0; j < this.tiles[i].length; j++) {
-                if (this.tiles[i][j].type == 0)
-                    this.tiles[i][j].setType(Math.floor(Math.random() * 6) + 1, 0.5, 2);
-            }
-        }
-        setTimeout(function () {
-            this.animateDestroy(this.findMatches());
-        }.bind(this), 500);
-    }
-
     public animateDestroy(matches: any) {
         if (matches.length > 0) {
             this.switchInteractive(false);
             for (var i = 0; i < matches.length; i++) {
                 for (var j = 0; j < matches[i].length; j++) {
                     TweenLite.to(matches[i][j].item, 0.4, { alpha: 0, rotation: 2.5});
+                    TweenLite.to(matches[i][j].item.scale, 0.4, { x: 0, y: 0});
                 }
             }
 
             createjs.Sound.play(Game.destroySound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 1);
             setTimeout(function () {
                 this.destroyMatches(matches);
-            }.bind(this), 400);
-        } else
+            }.bind(this), 425);
+        } else {
+            Game.MULT = 0;
+            console.log("Combo is over naxoi")
+            TweenLite.to(Game.MULT_TEXT, 0.5, { alpha: 0 });
             this.switchInteractive(true);
+        }
     }
 
 
     public destroyMatches(matches: Tile[][]) {
         
-        var count = 0;
         for (var i = 0; i < matches.length; i++) {
             for (var j = 0; j < matches[i].length; j++) {
                 var t = matches[i][j];
-                count += 1;
+                Game.MULT += 1;
+                Game.MULT_TEXT.text = "x" + Game.MULT.toString();
+                if (Game.MULT == 1) {
+                    TweenLite.to(Game.MULT_TEXT, 0.2, { alpha: 1 });
+                }
                 // this.tiles[t.pos.x][t.pos.y].destroy();
                 // this.tiles[t.pos.x][t.pos.y] = null;
-                Game.SCORE += 50 * count;
+                Game.SCORE += 50 * Game.MULT;
+                console.log("Sc:" + Game.SCORE);
                 Game.SCORE_TEXT.text = Game.SCORE.toString();
                 this.tiles[t.pos.x][t.pos.y].setType(0);
             }
         }
 
-        console.log("Combo: " + count + "element.");
+        // Game.MULT *= count;
+        console.log("Combo: " + Game.MULT + "element.");
         // this.switchInteractive();
         // createjs.Sound.play(Game.destroySound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 1);
         setTimeout(function () {
             this.dropTiles();
-        }.bind(this), 500);       
+        }.bind(this), 250);       
     }
 
     public switchInteractive(interactive: boolean)
