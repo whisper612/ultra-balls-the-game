@@ -146,9 +146,10 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                 this.switchInteractive(false);
                 for (var i = 0; i < matches.length; i++) {
                     for (var j = 0; j < matches[i].length; j++) {
-                        TweenLite.to(matches[i][j].item, 0.4, { alpha: 0 });
+                        TweenLite.to(matches[i][j].item, 0.4, { alpha: 0, rotation: 2.5 });
                     }
                 }
+                createjs.Sound.play(game_js_1.Game.destroySound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 1);
                 setTimeout(function () {
                     this.destroyMatches(matches);
                 }.bind(this), 400);
@@ -171,7 +172,7 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
             }
             console.log("Combo: " + count + "element.");
             // this.switchInteractive();
-            createjs.Sound.play(game_js_1.Game.destroySound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.5);
+            // createjs.Sound.play(Game.destroySound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 1);
             setTimeout(function () {
                 this.dropTiles();
             }.bind(this), 500);

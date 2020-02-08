@@ -151,11 +151,11 @@ export class Field extends Container {
             this.switchInteractive(false);
             for (var i = 0; i < matches.length; i++) {
                 for (var j = 0; j < matches[i].length; j++) {
-                    TweenLite.to(matches[i][j].item, 0.4, { alpha: 0 });
+                    TweenLite.to(matches[i][j].item, 0.4, { alpha: 0, rotation: 2.5});
                 }
             }
 
-
+            createjs.Sound.play(Game.destroySound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 1);
             setTimeout(function () {
                 this.destroyMatches(matches);
             }.bind(this), 400);
@@ -181,7 +181,7 @@ export class Field extends Container {
 
         console.log("Combo: " + count + "element.");
         // this.switchInteractive();
-        createjs.Sound.play(Game.destroySound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.5);
+        // createjs.Sound.play(Game.destroySound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 1);
         setTimeout(function () {
             this.dropTiles();
         }.bind(this), 500);       

@@ -104,7 +104,6 @@ export class Tile extends Container {
         this.setType(type);
         
         this.addChild(this.item);
-            
     }
         
     public select()
@@ -116,7 +115,7 @@ export class Tile extends Container {
             this.setState(this.States.SELECTED);
             // this.item.alpha = this.pressedAlpha;
             this._field.highlightNeighbours(this);
-            createjs.Sound.play(Game.selectSound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.35);
+            createjs.Sound.play(Game.selectSound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.1);
 
             
         }
@@ -126,7 +125,7 @@ export class Tile extends Container {
         }
     }
 
-    public deselect()
+    public deselect(playSound: boolean = true)
     {
         if (this._field.selectedTile == this)
         {
@@ -136,7 +135,9 @@ export class Tile extends Container {
         this.setState(this.States.IDLE);
         // this.item.alpha = 1;
         TweenLite.fromTo(this.item, 0.3, { alpha: this.item.alpha }, { alpha: 1 });
-        createjs.Sound.play(Game.unselectSound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.35);
+        if (playSound) {
+            createjs.Sound.play(Game.unselectSound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.1);
+        }
     }
 
 
@@ -161,7 +162,7 @@ export class Tile extends Container {
                 this._field.selectedTile.setType(temp);
                 TweenLite.set(this.item, {x: 37.5, y: 37.5});
                 TweenLite.set(this._field.selectedTile.item, { x: 37.5, y: 37.5});
-                this._field.selectedTile.deselect();
+                this._field.selectedTile.deselect(false);
 
                 var matches = this._field.findMatches();
 
@@ -177,14 +178,11 @@ export class Tile extends Container {
     {
         if (fall > 0){
             TweenLite.fromTo(this.item, fall, { y: this.item.y - 75 * mult }, { y: this.item.y});
-            this.type = t;
-            this.item.texture = this.itemTextures[this.type];
-            this.item.alpha = 1;
-        } else {            
-            this.type = t;
-            this.item.texture = this.itemTextures[this.type];
-            this.item.alpha = 1;
-        }
+        } 
+        this.type = t;
+        this.item.texture = this.itemTextures[this.type];
+        this.item.alpha = 1;
+        this.item.rotation = 0;
     }
 
     public highlight()

@@ -92,13 +92,14 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
                 this.setState(this.States.SELECTED);
                 // this.item.alpha = this.pressedAlpha;
                 this._field.highlightNeighbours(this);
-                createjs.Sound.play(game_js_1.Game.selectSound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.35);
+                createjs.Sound.play(game_js_1.Game.selectSound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.1);
             }
             else {
                 this.swap();
             }
         };
-        Tile.prototype.deselect = function () {
+        Tile.prototype.deselect = function (playSound) {
+            if (playSound === void 0) { playSound = true; }
             if (this._field.selectedTile == this) {
                 this._field.selectedTile = null;
             }
@@ -106,7 +107,9 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             this.setState(this.States.IDLE);
             // this.item.alpha = 1;
             TweenLite.fromTo(this.item, 0.3, { alpha: this.item.alpha }, { alpha: 1 });
-            createjs.Sound.play(game_js_1.Game.unselectSound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.35);
+            if (playSound) {
+                createjs.Sound.play(game_js_1.Game.unselectSound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.1);
+            }
         };
         Tile.prototype.swap = function () {
             if (this.highlighted) {
@@ -125,7 +128,7 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
                     this._field.selectedTile.setType(temp);
                     TweenLite.set(this.item, { x: 37.5, y: 37.5 });
                     TweenLite.set(this._field.selectedTile.item, { x: 37.5, y: 37.5 });
-                    this._field.selectedTile.deselect();
+                    this._field.selectedTile.deselect(false);
                     var matches = this._field.findMatches();
                     this._field.animateDestroy(matches);
                 }.bind(this), 800);
@@ -138,15 +141,11 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             if (mult === void 0) { mult = 1; }
             if (fall > 0) {
                 TweenLite.fromTo(this.item, fall, { y: this.item.y - 75 * mult }, { y: this.item.y });
-                this.type = t;
-                this.item.texture = this.itemTextures[this.type];
-                this.item.alpha = 1;
             }
-            else {
-                this.type = t;
-                this.item.texture = this.itemTextures[this.type];
-                this.item.alpha = 1;
-            }
+            this.type = t;
+            this.item.texture = this.itemTextures[this.type];
+            this.item.alpha = 1;
+            this.item.rotation = 0;
         };
         Tile.prototype.highlight = function () {
             if (this.background.texture == this.fieldTextures[0]) {
