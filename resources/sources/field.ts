@@ -190,7 +190,7 @@ export class Field extends Container {
                 // this.tiles[t.pos.x][t.pos.y].destroy();
                 // this.tiles[t.pos.x][t.pos.y] = null;
                 Game.SCORE += 50 * Game.MULT;
-                console.log("Sc:" + Game.SCORE);
+                console.log("Sc: " + Game.SCORE);
                 Game.SCORE_TEXT.text = Game.SCORE.toString();
                 this.tiles[t.pos.x][t.pos.y].setType(0);
             }
