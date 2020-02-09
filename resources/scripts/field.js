@@ -32,7 +32,7 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
             for (var i = 0; i < 8; i++) {
                 this.tiles[i] = new Array(8);
                 for (var j = 0; j < 8; j++) {
-                    var type = Math.floor(Math.random() * 2) + 1;
+                    var type = Math.floor(Math.random() * 6) + 1;
                     this.tiles[i][j] = new tile_js_1.Tile(this, type, [i, j]);
                     this.tiles[i][j].setType(type, 1.5, 8);
                     this.tiles[i][j].position.set(paddingX + j * tileSize, paddingY + i * tileSize);
@@ -50,7 +50,7 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
             for (var i = 0; i < this.tiles.length; i++) {
                 for (var j = 0; j < this.tiles[i].length; j++) {
                     if (this.tiles[i][j].type == 0)
-                        this.tiles[i][j].setType(Math.floor(Math.random() * 2) + 1, 0.5, 2);
+                        this.tiles[i][j].setType(Math.floor(Math.random() * 6) + 1, 0.5, 2);
                 }
             }
             setTimeout(function () {
@@ -58,7 +58,6 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                     this.animateDestroy(this.findMatches());
                 else {
                     game_js_1.Game.MULT = 0;
-                    console.log("Game is over naxoi");
                     TweenLite.to(game_js_1.Game.MULT_TEXT, 0.5, { alpha: 0 });
                     this.switchInteractive(true);
                 }
@@ -167,7 +166,6 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
             }
             else {
                 game_js_1.Game.MULT = 0;
-                console.log("Combo is over naxoi");
                 TweenLite.to(game_js_1.Game.MULT_TEXT, 0.5, { alpha: 0 });
                 this.switchInteractive(true);
             }
@@ -184,7 +182,7 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                     // this.tiles[t.pos.x][t.pos.y].destroy();
                     // this.tiles[t.pos.x][t.pos.y] = null;
                     game_js_1.Game.SCORE += 50 * game_js_1.Game.MULT;
-                    console.log("Sc:" + game_js_1.Game.SCORE);
+                    console.log("Sc: " + game_js_1.Game.SCORE);
                     game_js_1.Game.SCORE_TEXT.text = game_js_1.Game.SCORE.toString();
                     this.tiles[t.pos.x][t.pos.y].setType(0);
                 }
