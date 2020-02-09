@@ -32,7 +32,7 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
             for (var i = 0; i < 8; i++) {
                 this.tiles[i] = new Array(8);
                 for (var j = 0; j < 8; j++) {
-                    var type = Math.floor(Math.random() * 6) + 1;
+                    var type = Math.floor(Math.random() * 2) + 1;
                     this.tiles[i][j] = new tile_js_1.Tile(this, type, [i, j]);
                     this.tiles[i][j].setType(type, 1.5, 8);
                     this.tiles[i][j].position.set(paddingX + j * tileSize, paddingY + i * tileSize);
@@ -50,7 +50,7 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
             for (var i = 0; i < this.tiles.length; i++) {
                 for (var j = 0; j < this.tiles[i].length; j++) {
                     if (this.tiles[i][j].type == 0)
-                        this.tiles[i][j].setType(Math.floor(Math.random() * 6) + 1, 0.5, 2);
+                        this.tiles[i][j].setType(Math.floor(Math.random() * 2) + 1, 0.5, 2);
                 }
             }
             setTimeout(function () {
