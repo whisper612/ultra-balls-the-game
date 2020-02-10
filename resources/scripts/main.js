@@ -4,7 +4,7 @@ define(["require", "exports", "./game.js", "./button.js"], function (require, ex
     var Application = PIXI.Application;
     var Loader = PIXI.Loader;
     var loader = new Loader();
-    //add .png to Pixi loader
+    // Подгрузка ресурсов через PIXI loader
     loader.add("redBall", "/resources/assets/images/balls/redBall.png");
     loader.add("whiteBall", "/resources/assets/images/balls/whiteBall.png");
     loader.add("orangeBall", "/resources/assets/images/balls/orangeBall.png");
@@ -24,15 +24,13 @@ define(["require", "exports", "./game.js", "./button.js"], function (require, ex
     loader.add("soundSwitcherOff", "/resources/assets/images/buttons/soundButtonOff.png");
     loader.add("soundSwitcherOn", "/resources/assets/images/buttons/soundButtonOn.png");
     loader.load(setup);
-    // Create a Pixi Application
     var app = new Application({
-        // backgroundColor: 0x210f39,
         antialias: true,
         transparent: true,
         resolution: 1,
     });
     var loadGameButton;
-    // App sizing
+    // Изменение размеров приложения PIXI при изменинеии размеров окна
     function eventListenerResize() {
         app.renderer.autoResize = true;
         app.renderer.resize(window.innerWidth, window.innerHeight);
@@ -45,7 +43,7 @@ define(["require", "exports", "./game.js", "./button.js"], function (require, ex
     }
     eventListenerResize();
     window.onresize = eventListenerResize;
-    // Add the canvas that Pixi automatically created
+    // Функция вызываемая после подгрузки ресурсов
     function setup(loader, resources) {
         document.body.appendChild(app.view);
         loadGameButton = new button_js_1.Button(resources.playButtonNormal.texture, resources.playButtonPressed.texture);
@@ -53,8 +51,6 @@ define(["require", "exports", "./game.js", "./button.js"], function (require, ex
         loadGameButton.on('click', function () {
             var game = new game_js_1.Game(resources);
             app.stage.addChild(game);
-            document.addEventListener('keydown', game.eventKeyboardInput.bind(game));
-            document.addEventListener('keyup', game.eventKeyboardInput.bind(game));
             app.stage.removeChild(loadGameButton);
         });
         app.stage.addChild(loadGameButton);

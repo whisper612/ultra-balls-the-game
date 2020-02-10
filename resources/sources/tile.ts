@@ -9,16 +9,10 @@ import { Button } from "./button.js";
 declare let TweenLite: any; // https://greensock.com/forums/topic/15365-not-able-to-move-div-in-angular-2/
 
 export class Tile extends Container {
-
-    // Params
-    private background: Sprite;
     private item: Sprite;
-    public type: number;
-    public highlighted: boolean;
-    private state: number;
-
-    // Game res array
+    private background: Sprite;
     private itemTextures: Texture[] = [
+        // Пустая клетка
         null,
         Game.RES.redBall.texture,
         Game.RES.orangeBall.texture,
@@ -28,33 +22,32 @@ export class Tile extends Container {
         Game.RES.purpleBall.texture,
         Game.RES.whiteBall.texture,
     ];
-
     private fieldTextures: Texture[] = [
         Game.RES.field.texture,
         Game.RES.fieldHighlighted.texture
     ];
-
+    
+    protected pressedAlpha: number = 0.4;
+    protected isOver: boolean = true;
+    protected isDown: boolean = false;
+    
+    private state: number;
+    private _field: Field; 
     private States = {
         "IDLE": 1,
         "SELECTED": 2,
         "DISABLED": 3
     }
 
-
-    protected pressedAlpha: number = 0.4;
-    protected isOver: boolean = true;
-    protected isDown: boolean = false;
-
-    private _state: number;
-    private _field: Field;
     public pos = {
         "x": 0,
         "y": 0
     }
+    public type: number;
+    public highlighted: boolean;
 
-    private setState(state: any):void
-    {
-        this._state = state;
+    private setState(state: any):void {
+        this.state = state;
     }
     
     constructor (field: Field, type: number, pos: number[]) {
@@ -77,71 +70,64 @@ export class Tile extends Container {
         this.setState(this.States.IDLE);
 
         this.item.on("pointerover", function (): void {
-        if (this._state == this.States.IDLE)
-            this.item.alpha = 0.75;
+            if (this.state == this.States.IDLE) {
+                this.item.alpha = 0.75;
+            }
         }.bind(this));
         
         this.item.on("pointerout", function (): void {
-            if (this._state == this.States.IDLE)
-            this.item.alpha = 1;
+            if (this.state == this.States.IDLE) {
+                this.item.alpha = 1;
+            }
         }.bind(this));        
         
         this.item.on("pointerdown", function (): void {
-            if (this._state == this.States.IDLE)
-            this.select();
-            else if (this._state == this.States.SELECTED)
-            this.deselect();
-        }.bind(this));
-        
-        this.item.on("pointerup", function (): void {
-            
+            if (this.state == this.States.IDLE) {
+                this.select();
+            } else {
+                if (this.state == this.States.SELECTED) {
+                    this.deselect();                    
+                }
+            }
         }.bind(this));
         
         this.item.on("pointerupoutside", function (): void {
-            if (this._state == this.States.SELECTED)
-            this.deselect();
+            if (this.state == this.States.SELECTED) {
+                this.deselect();
+            }
         }.bind(this));
         
         this.setType(type);
-        
         this.addChild(this.item);
     }
         
-    public select()
-    {
-        if(this._field.selectedTile == null)
-        {
+    // Выбор шарика
+    public select() {
+        if(this._field.selectedTile == null) {
             TweenLite.fromTo(this.item, 0.3, { alpha: this.item.alpha }, { alpha: this.pressedAlpha});
             this._field.selectedTile = this;
             this.setState(this.States.SELECTED);
-            // this.item.alpha = this.pressedAlpha;
             this._field.highlightNeighbours(this);
             createjs.Sound.play(Game.selectSound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.05);
-
-            
-        }
-        else
-        {
+        } else {
             this.swap();
         }
     }
 
-    public deselect(playSound: boolean = true)
-    {
-        if (this._field.selectedTile == this)
-        {
+    // Отмена выбора шарика
+    public deselect(playSound: boolean = true) {
+        if (this._field.selectedTile == this) {
             this._field.selectedTile = null;
         }
         this._field.unHighlightNeighbours(this);
         this.setState(this.States.IDLE);
-        // this.item.alpha = 1;
         TweenLite.fromTo(this.item, 0.3, { alpha: this.item.alpha }, { alpha: 1 });
         if (playSound) {
             createjs.Sound.play(Game.unselectSound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.05);
         }
     }
 
-
+    // Смена позиций двух шариков между друг другом
     public swap() {
         if (this.highlighted) {
             this._field.switchInteractive(false);
@@ -154,8 +140,6 @@ export class Tile extends Container {
 
             TweenLite.to(this.item, 0.75, { x: this.item.x + x1, y: this.item.y + y1});
             TweenLite.to(this._field.selectedTile.item, 0.75, { x: this.item.x - x1, y: this.item.y - y1});
-
-            console.log("Swapped");
 
             setTimeout(function () {
                 let temp = this.type;
@@ -170,14 +154,12 @@ export class Tile extends Container {
                 this._field.animateDestroy(matches);
 
             }.bind(this), 800);
-        } else
-            console.log("Can't swap");
+        }
     }
         
-
-    public setType(t: number, fall: number = 0, mult: number = 1)
-    {
-        if (fall > 0){
+    // Установка типа шарика
+    public setType(t: number, fall: number = 0, mult: number = 1) {
+        if (fall > 0) {
             TweenLite.fromTo(this.item, fall, { y: this.item.y - 75 * mult }, { y: this.item.y});
         } 
         this.type = t;
@@ -187,15 +169,15 @@ export class Tile extends Container {
         this.item.scale.set(0.8);
     }
 
-    public highlight()
-    {
+    // Подсветка клетки
+    public highlight() {
         if (this.background.texture == this.fieldTextures[0]) {
             this.background.texture = this.fieldTextures[1];
         }
         this.highlighted = true;
-        
     }
     
+    // Отмена подсветки клетки
     public unHighlight() {
         if (this.background.texture == this.fieldTextures[1]){
             this.background.texture = this.fieldTextures[0];
@@ -203,8 +185,8 @@ export class Tile extends Container {
         this.highlighted = false;
     }
 
-    public switchInteractive (interactive: boolean)
-    {
+    // Переключатель воздействия на элементы пользователем
+    public switchInteractive (interactive: boolean) {
         this.item.interactive = interactive;
         this.item.buttonMode = interactive;
     }

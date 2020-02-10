@@ -5,7 +5,7 @@ import {Button} from "./button.js"
 
 const loader: Loader = new Loader();
 
-//add .png to Pixi loader
+// Подгрузка ресурсов через PIXI loader
 loader.add("redBall", "/resources/assets/images/balls/redBall.png");
 loader.add("whiteBall", "/resources/assets/images/balls/whiteBall.png");
 loader.add("orangeBall", "/resources/assets/images/balls/orangeBall.png");
@@ -26,9 +26,8 @@ loader.add("soundSwitcherOff", "/resources/assets/images/buttons/soundButtonOff.
 loader.add("soundSwitcherOn", "/resources/assets/images/buttons/soundButtonOn.png");
 loader.load(setup);
 
-// Create a Pixi Application
+
 let app: Application = new Application({
-    // backgroundColor: 0x210f39,
     antialias: true,
     transparent: true,
     resolution: 1,
@@ -36,7 +35,7 @@ let app: Application = new Application({
 
 let loadGameButton: Button;
 
-// App sizing
+// Изменение размеров приложения PIXI при изменинеии размеров окна
 function eventListenerResize(): void {
     app.renderer.autoResize = true;
     app.renderer.resize(window.innerWidth, window.innerHeight);
@@ -51,8 +50,7 @@ function eventListenerResize(): void {
 eventListenerResize();
 window.onresize = eventListenerResize;
 
-// Add the canvas that Pixi automatically created
-
+// Функция вызываемая после подгрузки ресурсов
 function setup(loader: Loader, resources: any): void {
     
     document.body.appendChild(app.view);
@@ -62,11 +60,8 @@ function setup(loader: Loader, resources: any): void {
     loadGameButton.on('click', function () {        
         let game: Game = new Game(resources);
         app.stage.addChild(game);
-        document.addEventListener('keydown', game.eventKeyboardInput.bind(game));
-        document.addEventListener('keyup', game.eventKeyboardInput.bind(game));
         app.stage.removeChild(loadGameButton);
     });
 
     app.stage.addChild(loadGameButton);
-    
 }

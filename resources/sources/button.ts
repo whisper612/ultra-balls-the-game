@@ -8,7 +8,6 @@ import { Game } from "./game.js";
 
 export class Button extends Container {
 
-    // Params
     public sprite: Sprite;
     private normalTexture: Texture;
     private pressTexture: Texture;
@@ -18,16 +17,15 @@ export class Button extends Container {
     constructor(_norm : Texture, _pressed: Texture, _text: string = "", 
         _fonstSize: number = 18, _fill: string = "#ffffff" , _align: string = "center") {
         super();
-        // Stock button params
+
         this.sprite = new Sprite();
         this.setAnchor(0.5, 0.5);
         this.sprite.interactive = true;
         this.sprite.buttonMode = true;
-        // Texture resieving from parametrs
+        
         this.normalTexture = _norm;
         this.pressTexture = _pressed;
 
-        // Stock text params
         this.text = new Text(_text);
         this.text.anchor.set(0.5, 0.5);
         this.text.position.set(0, this.sprite.height / 2);
@@ -35,13 +33,13 @@ export class Button extends Container {
                                         dropShadow: false});
         this.setShadowEffects();
 
-        // Events listeners for buttons
-        this.sprite.on("pointerover", function() {
+
+        this.sprite.on("pointerover", function(): void {
             this.setPressStyle();
         }.bind(this));
+
         this.sprite.on("pointerout", function (): void {
-            if (this.alpha == 1)
-            {
+            if (this.alpha == 1) {
                 this.setNormalStyle();
             }
         }.bind(this));
@@ -54,8 +52,7 @@ export class Button extends Container {
         
         this.sprite.on("pointerupoutside", function (): void {
             this.alpha = 1;
-            if (this.sprite.texture == this.pressTexture)
-            {
+            if (this.sprite.texture == this.pressTexture) {
                 this.setNormalStyle()
             }
         }.bind(this));
@@ -64,13 +61,12 @@ export class Button extends Container {
             this.setNormalStyle();
             this.sprite.interactive = false;
             this.emit("click");
-            setTimeout(function() {
+            setTimeout(function(): void {
                 this.alpha = 1;
                 this.sprite.interactive = true;
             }.bind(this), 50);
         }.bind(this));
         
-
         this.sprite.texture = this.normalTexture;
         this.addChild(this.sprite);
         this.addChild(this.text);
@@ -80,35 +76,32 @@ export class Button extends Container {
         this.sprite.anchor.set(x, y);
     }
 
-    // Functions for customzing buttons
-    public setNormalStyle()
-    {
+    // Функции для кастомизирования кнопок
+    public setNormalStyle() {
         this.sprite.texture = this.normalTexture;
         this.text.style.fontWeight = "400";
         this.text.style.dropShadow = false;
     }
 
-    public setPressStyle()
-    {
+    public setPressStyle() {
         this.sprite.texture = this.pressTexture;
         this.text.style.fontWeight = "500";
         this.text.style.dropShadow = true;
     }
 
-    public setShadowEffects()
-    {
+    public setShadowEffects() {
         this.text.style.dropShadowDistance = 6;
         this.text.style.dropShadowBlur = 5;
     }
 
-    public reset()
-    {
+    public reset() {
         this.setNormalStyle();
         this.sprite.interactive = true;
         this.alpha = 1;
     }
 }
 
+// Особый случай класса button
 export class MenuButton extends Button {
     constructor(text: string, _fonstSize: number = 48, 
         _fill: string = '#00ccff', _align: string = "center") {

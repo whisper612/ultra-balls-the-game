@@ -11,21 +11,20 @@ export class Switcher extends Container {
     constructor(_norm: Texture, _switch: Texture) {
         super();
 
-        // Stock button params
         this.sprite = new Sprite(_norm);
         this.sprite.anchor.set(0.5);
         this.sprite.interactive = true;
         this.sprite.buttonMode = true;
 
-        this.sprite.on("pointerover", function() {
+        this.sprite.on("pointerover", function(): void {
             this.sprite.alpha = 0.75;
         }.bind(this));
         
-        this.sprite.on("pointerout", function() {
+        this.sprite.on("pointerout", function(): void {
             this.sprite.alpha = 1;
         }.bind(this));
         
-        this.sprite.on("pointeroutside", function() {
+        this.sprite.on("pointeroutside", function(): void {
             this.sprite.alpha = 1;
         }.bind(this));
 

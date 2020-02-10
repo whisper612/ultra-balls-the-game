@@ -7,44 +7,38 @@ import Sound = createjs.Sound;
 import { Field } from "./field.js";
 import { Switcher } from "./switcher.js"
 import { MenuButton } from "./button.js"
-declare let TweenLite: any;
+declare let TweenLite: any; // https://greensock.com/forums/topic/15365-not-able-to-move-div-in-angular-2/
 
 export class Game extends Container {
 
-    // Params
     public static WIDTH: number = 720;
     public static HEIGHT: number = 1280;
     public static MULT: number;
     public static SCORE: number;
     public static RES: any;
-
-    private FIELD: Field;
-    private backgroundSprite: Sprite;
     public static SCORE_TEXT: Text;
     public static MULT_TEXT: Text;
-    public static TIMER_TEXT: Text;
-    public soundSwitcher: Switcher;
-    public restartButton: MenuButton;
-
-    private _time: number;
-
     public static selectSound: any = "Select";
     public static unselectSound: any = "Unselect"
     public static destroySound: any = "Destroy"
     public static pressSound: any = "Press"
     public static ambientSound: any = "Ambient";
-
     public static GAMEOVER: boolean;
+
+    private static TIMER_TEXT: Text;
+    private FIELD: Field;
+    private backgroundSprite: Sprite;
+    private soundSwitcher: Switcher;
+    private restartButton: MenuButton;
+    private _time: number;
 
     constructor(resources: any) {
         super();
-        // Res from main loader
         Game.RES = resources;
         Game.SCORE = 0;
         Game.GAMEOVER = false;
         Game.MULT = 0;
-        // Game.timer = new ///...
-        // Background draw
+
         this.backgroundSprite = new Sprite(Game.RES.background.texture);
         this.backgroundSprite.width = Game.WIDTH;
         this.backgroundSprite.height = Game.HEIGHT;
@@ -88,18 +82,12 @@ export class Game extends Container {
         this.soundSwitcher.scale.set(0.8);
 
         this.restartButton = new MenuButton("RESTART");
-        // this.restartButton.position.set(Game.WIDTH * 0.5, Game.HEIGHT * 0.65);
-        this.restartButton.on('click', function() {
+        this.restartButton.on('click', function():void {
             let game: Game = new Game(Game.RES);
             this.parent.addChild(game);
             this.destroy();
         }.bind(this));
 
-        
-        this.addChild(this.backgroundSprite);
-        this.addChild(Game.SCORE_TEXT);
-        this.addChild(Game.MULT_TEXT);
-        this.addChild(Game.TIMER_TEXT);
         
         Sound.registerSound("/resources/assets/sounds/ambient.mp3", Game.ambientSound);
         Sound.registerSound("/resources/assets/sounds/select.mp3", Game.selectSound);
@@ -107,16 +95,27 @@ export class Game extends Container {
         Sound.registerSound("/resources/assets/sounds/destroy.mp3", Game.destroySound);
         Sound.registerSound("/resources/assets/sounds/press.mp3", Game.pressSound);
         Sound.on("fileload", this.eventLoad, Game.ambientSound);
+
+        this.addChild(this.backgroundSprite);
+        this.addChild(Game.MULT_TEXT);
+        this.addChild(Game.TIMER_TEXT);
         this.addChild(this.FIELD);
         this.addChild(this.soundSwitcher);
-
-        setTimeout(function () {
+        
+        // Задержка падения шариков после начала игры
+        setTimeout(function (): void {
             this.addChild(Game.SCORE_TEXT);
             this.FIELD.destroyField();
             this.FIELD.generateField();
         }.bind(this), 200);
     }
 
+    // Обработчик проигрывания фоновой музыки
+    public eventLoad() {
+        createjs.Sound.play(Game.ambientSound, createjs.Sound.INTERRUPT_ANY, 0, 0, -1, 0.5);
+    }
+
+    // Старт таймера ограничения времени игры
     public startTimer()
     {
         this._time = 301;
@@ -126,14 +125,7 @@ export class Game extends Container {
         this.timerUpdate();
     }
 
-    public eventKeyboardInput(event: KeyboardEvent): void {
-        // public dropTiles() {
-    }
-
-    public eventLoad() {
-        createjs.Sound.play(Game.ambientSound, createjs.Sound.INTERRUPT_ANY, 0, 0, -1, 0.5);
-    }
-
+    // Обработчик обновления таймера
     public timerUpdate()
     {
         this._time -= 1;
@@ -146,7 +138,8 @@ export class Game extends Container {
             Game.GAMEOVER = true;
             this.addChild(this.restartButton);
             this.restartButton.sprite.interactive = false;
-            TweenLite.fromTo(this.restartButton, 2, { x: Game.WIDTH / 2, y: Game.HEIGHT - 300, alpha: 0}, { x: Game.WIDTH / 2, y: Game.HEIGHT * 0.55, alpha: 1} );
+            TweenLite.fromTo(this.restartButton, 2, { x: Game.WIDTH / 2, y: Game.HEIGHT - 300, alpha: 0}, 
+                                                    { x: Game.WIDTH / 2, y: Game.HEIGHT * 0.55, alpha: 1} );
             Game.WIDTH * 0.5, Game.HEIGHT * 0.65
 
             setTimeout(function () {
@@ -161,6 +154,5 @@ export class Game extends Container {
         var kostil = (sec < 10) ? "0" : "";
         
         Game.TIMER_TEXT.text = min.toString() + ":" + kostil + sec.toString(); 
-
     }
 }

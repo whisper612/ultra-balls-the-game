@@ -27,22 +27,18 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             if (_align === void 0) { _align = "center"; }
             var _this = _super.call(this) || this;
             _this.pressedAlpha = 0.4;
-            // Stock button params
             _this.sprite = new Sprite();
             _this.setAnchor(0.5, 0.5);
             _this.sprite.interactive = true;
             _this.sprite.buttonMode = true;
-            // Texture resieving from parametrs
             _this.normalTexture = _norm;
             _this.pressTexture = _pressed;
-            // Stock text params
             _this.text = new Text(_text);
             _this.text.anchor.set(0.5, 0.5);
             _this.text.position.set(0, _this.sprite.height / 2);
             _this.text.style = new TextStyle({ fontSize: _fonstSize, fontFamily: "Unispace", fill: _fill, align: _align, fontWeight: "400",
                 dropShadow: false });
             _this.setShadowEffects();
-            // Events listeners for buttons
             _this.sprite.on("pointerover", function () {
                 this.setPressStyle();
             }.bind(_this));
@@ -79,7 +75,7 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
         Button.prototype.setAnchor = function (x, y) {
             this.sprite.anchor.set(x, y);
         };
-        // Functions for customzing buttons
+        // Функции для кастомизирования кнопок
         Button.prototype.setNormalStyle = function () {
             this.sprite.texture = this.normalTexture;
             this.text.style.fontWeight = "400";
@@ -102,6 +98,7 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
         return Button;
     }(Container));
     exports.Button = Button;
+    // Особый случай класса button
     var MenuButton = /** @class */ (function (_super) {
         __extends(MenuButton, _super);
         function MenuButton(text, _fonstSize, _fill, _align) {

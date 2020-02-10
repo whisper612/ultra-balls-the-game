@@ -20,8 +20,8 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
         __extends(Tile, _super);
         function Tile(field, type, pos) {
             var _this = _super.call(this) || this;
-            // Game res array
             _this.itemTextures = [
+                // Пустая клетка
                 null,
                 game_js_1.Game.RES.redBall.texture,
                 game_js_1.Game.RES.orangeBall.texture,
@@ -35,14 +35,14 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
                 game_js_1.Game.RES.field.texture,
                 game_js_1.Game.RES.fieldHighlighted.texture
             ];
+            _this.pressedAlpha = 0.4;
+            _this.isOver = true;
+            _this.isDown = false;
             _this.States = {
                 "IDLE": 1,
                 "SELECTED": 2,
                 "DISABLED": 3
             };
-            _this.pressedAlpha = 0.4;
-            _this.isOver = true;
-            _this.isDown = false;
             _this.pos = {
                 "x": 0,
                 "y": 0
@@ -60,38 +60,43 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             _this._field = field;
             _this.setState(_this.States.IDLE);
             _this.item.on("pointerover", function () {
-                if (this._state == this.States.IDLE)
+                if (this.state == this.States.IDLE) {
                     this.item.alpha = 0.75;
+                }
             }.bind(_this));
             _this.item.on("pointerout", function () {
-                if (this._state == this.States.IDLE)
+                if (this.state == this.States.IDLE) {
                     this.item.alpha = 1;
+                }
             }.bind(_this));
             _this.item.on("pointerdown", function () {
-                if (this._state == this.States.IDLE)
+                if (this.state == this.States.IDLE) {
                     this.select();
-                else if (this._state == this.States.SELECTED)
-                    this.deselect();
-            }.bind(_this));
-            _this.item.on("pointerup", function () {
+                }
+                else {
+                    if (this.state == this.States.SELECTED) {
+                        this.deselect();
+                    }
+                }
             }.bind(_this));
             _this.item.on("pointerupoutside", function () {
-                if (this._state == this.States.SELECTED)
+                if (this.state == this.States.SELECTED) {
                     this.deselect();
+                }
             }.bind(_this));
             _this.setType(type);
             _this.addChild(_this.item);
             return _this;
         }
         Tile.prototype.setState = function (state) {
-            this._state = state;
+            this.state = state;
         };
+        // Выбор шарика
         Tile.prototype.select = function () {
             if (this._field.selectedTile == null) {
                 TweenLite.fromTo(this.item, 0.3, { alpha: this.item.alpha }, { alpha: this.pressedAlpha });
                 this._field.selectedTile = this;
                 this.setState(this.States.SELECTED);
-                // this.item.alpha = this.pressedAlpha;
                 this._field.highlightNeighbours(this);
                 createjs.Sound.play(game_js_1.Game.selectSound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.05);
             }
@@ -99,6 +104,7 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
                 this.swap();
             }
         };
+        // Отмена выбора шарика
         Tile.prototype.deselect = function (playSound) {
             if (playSound === void 0) { playSound = true; }
             if (this._field.selectedTile == this) {
@@ -106,12 +112,12 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             }
             this._field.unHighlightNeighbours(this);
             this.setState(this.States.IDLE);
-            // this.item.alpha = 1;
             TweenLite.fromTo(this.item, 0.3, { alpha: this.item.alpha }, { alpha: 1 });
             if (playSound) {
                 createjs.Sound.play(game_js_1.Game.unselectSound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.05);
             }
         };
+        // Смена позиций двух шариков между друг другом
         Tile.prototype.swap = function () {
             if (this.highlighted) {
                 this._field.switchInteractive(false);
@@ -122,7 +128,6 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
                 this.item.alpha = 1;
                 TweenLite.to(this.item, 0.75, { x: this.item.x + x1, y: this.item.y + y1 });
                 TweenLite.to(this._field.selectedTile.item, 0.75, { x: this.item.x - x1, y: this.item.y - y1 });
-                console.log("Swapped");
                 setTimeout(function () {
                     var temp = this.type;
                     this.setType(this._field.selectedTile.type);
@@ -134,9 +139,8 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
                     this._field.animateDestroy(matches);
                 }.bind(this), 800);
             }
-            else
-                console.log("Can't swap");
         };
+        // Установка типа шарика
         Tile.prototype.setType = function (t, fall, mult) {
             if (fall === void 0) { fall = 0; }
             if (mult === void 0) { mult = 1; }
@@ -149,18 +153,21 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             this.item.rotation = 0;
             this.item.scale.set(0.8);
         };
+        // Подсветка клетки
         Tile.prototype.highlight = function () {
             if (this.background.texture == this.fieldTextures[0]) {
                 this.background.texture = this.fieldTextures[1];
             }
             this.highlighted = true;
         };
+        // Отмена подсветки клетки
         Tile.prototype.unHighlight = function () {
             if (this.background.texture == this.fieldTextures[1]) {
                 this.background.texture = this.fieldTextures[0];
             }
             this.highlighted = false;
         };
+        // Переключатель воздействия на элементы пользователем
         Tile.prototype.switchInteractive = function (interactive) {
             this.item.interactive = interactive;
             this.item.buttonMode = interactive;

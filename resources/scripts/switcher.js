@@ -20,7 +20,6 @@ define(["require", "exports"], function (require, exports) {
         __extends(Switcher, _super);
         function Switcher(_norm, _switch) {
             var _this = _super.call(this) || this;
-            // Stock button params
             _this.sprite = new Sprite(_norm);
             _this.sprite.anchor.set(0.5);
             _this.sprite.interactive = true;

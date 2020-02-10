@@ -21,8 +21,8 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
             var _this = _super.call(this) || this;
             _this.matches = [];
             return _this;
-            // this.generateField();
         }
+        // Генерация игрового поля заполненного тайлами
         Field.prototype.generateField = function () {
             this.tiles = null;
             this.tiles = new Array(8);
@@ -39,13 +39,14 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                     this.addChild(this.tiles[i][j]);
                 }
             }
+            // Блокировка шариков в полёте
             this.switchInteractive(false);
             setTimeout(function () {
-                this.switchInteractive(false);
                 this.animateDestroy(this.findMatches());
                 this.parent.startTimer();
             }.bind(this), 1700);
         };
+        // Генерация тайлов после их уничтожения
         Field.prototype.generateTiles = function () {
             for (var i = 0; i < this.tiles.length; i++) {
                 for (var j = 0; j < this.tiles[i].length; j++) {
@@ -54,8 +55,9 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                 }
             }
             setTimeout(function () {
-                if (!game_js_1.Game.GAMEOVER)
+                if (!game_js_1.Game.GAMEOVER) {
                     this.animateDestroy(this.findMatches());
+                }
                 else {
                     game_js_1.Game.MULT = 0;
                     TweenLite.to(game_js_1.Game.MULT_TEXT, 0.5, { alpha: 0 });
@@ -63,6 +65,7 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                 }
             }.bind(this), 500);
         };
+        // Унтичтожение игрового поля
         Field.prototype.destroyField = function () {
             if (this.tiles == null)
                 return;
@@ -72,19 +75,15 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                 }
             }
         };
-        Field.prototype.setSelected = function (tile) {
-            this.selectedTile = tile;
+        // Переключатель воздействия на элементы пользователем
+        Field.prototype.switchInteractive = function (interactive) {
+            for (var i = 0; i < this.tiles.length; i++) {
+                for (var j = 0; j < this.tiles[i].length; j++) {
+                    this.tiles[i][j].switchInteractive(interactive);
+                }
+            }
         };
-        Field.prototype.isNeighbours = function (a, b) {
-            if (b === void 0) { b = this.selectedTile; }
-            if (b == null)
-                return false;
-            else if (a.type == b.type)
-                return false; // TODO походу нахуй не надо
-            else if (Math.abs(a.pos.x - b.pos.x) + Math.abs(a.pos.y - b.pos.y) == 1)
-                return true;
-            return false;
-        };
+        // Подсветка соседнего тайла, елси онн образует новую комбинацию
         Field.prototype.createsNewMatch = function (s, n) {
             var temp = n.type;
             var currentMatches = this.findMatches().length;
@@ -93,25 +92,34 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
             var newMatches = this.findMatches().length;
             s.type = n.type;
             n.type = temp;
-            if (newMatches > currentMatches)
+            if (newMatches > currentMatches) {
                 return true;
+            }
             return false;
         };
+        // Подсветка клеток на которые возможно походить
         Field.prototype.highlightNeighbours = function (a) {
+            // Верхний равен верхнему тайлу от текущего и проверки строки над вернхим тайлом, либо null
             var upper = this.tiles[a.pos.x - 1] && this.tiles[a.pos.x - 1][a.pos.y];
             var right = this.tiles[a.pos.x] && this.tiles[a.pos.x][a.pos.y + 1];
             var bottom = this.tiles[a.pos.x + 1] && this.tiles[a.pos.x + 1][a.pos.y];
             var left = this.tiles[a.pos.x] && this.tiles[a.pos.x][a.pos.y - 1];
-            if (upper && this.createsNewMatch(a, upper))
+            if (upper && this.createsNewMatch(a, upper)) {
                 upper.highlight();
-            if (right && this.createsNewMatch(a, right))
+            }
+            if (right && this.createsNewMatch(a, right)) {
                 right.highlight();
-            if (bottom && this.createsNewMatch(a, bottom))
+            }
+            if (bottom && this.createsNewMatch(a, bottom)) {
                 bottom.highlight();
-            if (left && this.createsNewMatch(a, left))
+            }
+            if (left && this.createsNewMatch(a, left)) {
                 left.highlight();
+            }
         };
+        //  Отключение подсветки клеток на которые возможно походить
         Field.prototype.unHighlightNeighbours = function (a) {
+            // Верхний равен верхнему тайлу от текущего и проверки строки над вернхим тайлом, либо null
             var upper = this.tiles[a.pos.x - 1] && this.tiles[a.pos.x - 1][a.pos.y];
             var right = this.tiles[a.pos.x] && this.tiles[a.pos.x][a.pos.y + 1];
             var bottom = this.tiles[a.pos.x + 1] && this.tiles[a.pos.x + 1][a.pos.y];
@@ -125,31 +133,55 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
             if (left && left.highlighted)
                 left.unHighlight();
         };
+        // Гравитация или генерация шариков
         Field.prototype.dropTiles = function () {
-            var twinsCounter = this.dropLine();
+            var shiftsCounter = this.dropLine();
             setTimeout(function () {
-                if (twinsCounter > 0)
+                if (shiftsCounter > 0) {
                     this.dropTiles();
-                else
+                }
+                else {
                     this.generateTiles();
+                }
             }.bind(this), 225);
         };
+        // Сдвиг шариков, если над пустой клеткой есть шарик
         Field.prototype.dropLine = function () {
-            var twinsCounter = 0;
+            var shiftsCounter = 0;
             for (var j = 0; j < this.tiles.length; j++) {
                 for (var i = this.tiles[j].length - 1; i >= 0; i--) {
                     if (this.tiles[i][j].type == 0) {
                         if (this.tiles[i - 1]) {
                             if (this.tiles[i - 1][j].type != 0)
-                                twinsCounter += 1;
+                                shiftsCounter += 1;
                             this.tiles[i][j].setType(this.tiles[i - 1][j].type, 0.2);
                             this.tiles[i - 1][j].setType(0);
                         }
                     }
                 }
             }
-            return twinsCounter;
+            return shiftsCounter;
         };
+        // Удаление совпадений
+        Field.prototype.destroyMatches = function (matches) {
+            for (var i = 0; i < matches.length; i++) {
+                for (var j = 0; j < matches[i].length; j++) {
+                    var t = matches[i][j];
+                    game_js_1.Game.MULT += 1;
+                    game_js_1.Game.MULT_TEXT.text = "x" + game_js_1.Game.MULT.toString();
+                    if (game_js_1.Game.MULT == 1) {
+                        TweenLite.to(game_js_1.Game.MULT_TEXT, 0.2, { alpha: 1 });
+                    }
+                    game_js_1.Game.SCORE += 50 * game_js_1.Game.MULT;
+                    game_js_1.Game.SCORE_TEXT.text = game_js_1.Game.SCORE.toString();
+                    this.tiles[t.pos.x][t.pos.y].setType(0);
+                }
+            }
+            setTimeout(function () {
+                this.dropTiles();
+            }.bind(this), 250);
+        };
+        // Анимация удаления совпадений
         Field.prototype.animateDestroy = function (matches) {
             if (matches.length > 0) {
                 this.switchInteractive(false);
@@ -170,38 +202,7 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                 this.switchInteractive(true);
             }
         };
-        Field.prototype.destroyMatches = function (matches) {
-            for (var i = 0; i < matches.length; i++) {
-                for (var j = 0; j < matches[i].length; j++) {
-                    var t = matches[i][j];
-                    game_js_1.Game.MULT += 1;
-                    game_js_1.Game.MULT_TEXT.text = "x" + game_js_1.Game.MULT.toString();
-                    if (game_js_1.Game.MULT == 1) {
-                        TweenLite.to(game_js_1.Game.MULT_TEXT, 0.2, { alpha: 1 });
-                    }
-                    // this.tiles[t.pos.x][t.pos.y].destroy();
-                    // this.tiles[t.pos.x][t.pos.y] = null;
-                    game_js_1.Game.SCORE += 50 * game_js_1.Game.MULT;
-                    console.log("Sc: " + game_js_1.Game.SCORE);
-                    game_js_1.Game.SCORE_TEXT.text = game_js_1.Game.SCORE.toString();
-                    this.tiles[t.pos.x][t.pos.y].setType(0);
-                }
-            }
-            // Game.MULT *= count;
-            console.log("Combo: " + game_js_1.Game.MULT + "element.");
-            // this.switchInteractive();
-            // createjs.Sound.play(Game.destroySound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 1);
-            setTimeout(function () {
-                this.dropTiles();
-            }.bind(this), 250);
-        };
-        Field.prototype.switchInteractive = function (interactive) {
-            for (var i = 0; i < this.tiles.length; i++) {
-                for (var j = 0; j < this.tiles[i].length; j++) {
-                    this.tiles[i][j].switchInteractive(interactive);
-                }
-            }
-        };
+        // Поиск возможных совпадений по горизонтали и цвертикали
         Field.prototype.findMatches = function () {
             var v_matches = new Array();
             var h_matches = new Array();
@@ -274,7 +275,6 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                     matches.push(h_matches[i]);
                 }
             }
-            // console.log(this.tiles);
             return (matches);
         };
         return Field;
