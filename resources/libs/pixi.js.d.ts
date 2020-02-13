@@ -1889,7 +1889,7 @@ declare namespace PIXI {
             glShaderKey: number;
         }
 
-        // pixi-filters.d.ts todo
+        // TODO: pixi-filters.d.ts
         // https://github.com/pixijs/pixi-filters/
         type NoiseFilterUniforms =
             {

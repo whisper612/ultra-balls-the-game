@@ -36,8 +36,10 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             _this.text = new Text(_text);
             _this.text.anchor.set(0.5, 0.5);
             _this.text.position.set(0, _this.sprite.height / 2);
-            _this.text.style = new TextStyle({ fontSize: _fonstSize, fontFamily: "Unispace", fill: _fill, align: _align, fontWeight: "400",
-                dropShadow: false });
+            _this.text.style = new TextStyle({
+                fontSize: _fonstSize, fontFamily: "Unispace", fill: _fill, align: _align, fontWeight: "400",
+                dropShadow: false
+            });
             _this.setShadowEffects();
             _this.sprite.on("pointerover", function () {
                 this.setPressStyle();
@@ -49,7 +51,7 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             }.bind(_this));
             _this.sprite.on("pointerdown", function () {
                 this.alpha = this.pressedAlpha;
-                createjs.Sound.play(game_js_1.Game.pressSound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.5);
+                createjs.Sound.play(game_js_1.Game.PRESS_SOUND, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.5);
                 this.setPressStyle();
             }.bind(_this));
             _this.sprite.on("pointerupoutside", function () {

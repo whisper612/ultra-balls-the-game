@@ -19,118 +19,163 @@ define(["require", "exports", "./field.js", "./switcher.js", "./button.js"], fun
     var TextStyle = PIXI.TextStyle;
     var Container = PIXI.Container;
     var Sound = createjs.Sound;
+    var IDLE = 0;
+    var INGAME = 1;
+    var GAMEOVER = 2;
     var Game = /** @class */ (function (_super) {
         __extends(Game, _super);
         function Game(resources) {
             var _this = _super.call(this) || this;
+            _this._timeToPlay = 15;
             Game.RES = resources;
-            Game.SCORE = 0;
-            Game.GAMEOVER = false;
-            Game.MULT = 0;
-            _this.backgroundSprite = new Sprite(Game.RES.background.texture);
-            _this.backgroundSprite.width = Game.WIDTH;
-            _this.backgroundSprite.height = Game.HEIGHT;
-            _this.backgroundSprite.alpha = 0.6;
-            _this.FIELD = new field_js_1.Field();
-            Game.SCORE_TEXT = new Text(Game.SCORE.toString());
-            Game.SCORE_TEXT.style = new TextStyle({
+            _this._score = 0;
+            _this._combo = 0;
+            _this._state = IDLE;
+            _this._backgroundSprite = new Sprite(Game.RES.background.texture);
+            _this._backgroundSprite.width = Game.WIDTH;
+            _this._backgroundSprite.height = Game.HEIGHT;
+            _this._backgroundSprite.alpha = 0.6;
+            _this.on("eventStartTimer", _this.startTimer);
+            _this.on("eventComboEnd", _this.comboEnd);
+            _this.on("eventComboUp", _this.comboUp);
+            _this._field = new field_js_1.Field();
+            _this._scoreText = new Text(_this._score.toString());
+            _this._scoreText.style = new TextStyle({
                 fontSize: 68, fontFamily: "Unispace", fill: '#00ccff', align: "center", fontWeight: "600",
                 dropShadow: true,
                 dropShadowDistance: 6,
                 dropShadowBlur: 5,
             });
-            Game.SCORE_TEXT.anchor.set(0.5);
-            Game.SCORE_TEXT.position.set(Game.WIDTH / 2, 300);
-            Game.MULT_TEXT = new Text("x1");
-            Game.MULT_TEXT.style = new TextStyle({
+            _this._scoreText.anchor.set(0.5);
+            _this._scoreText.position.set(Game.WIDTH / 2, 300);
+            _this._comboText = new Text("x1");
+            _this._comboText.style = new TextStyle({
                 fontSize: 68, fontFamily: "Unispace", fill: '#00ccff', align: "center", fontWeight: "600",
                 dropShadow: true,
                 dropShadowDistance: 6,
                 dropShadowBlur: 5,
             });
-            Game.MULT_TEXT.anchor.set(0.5);
-            Game.MULT_TEXT.position.set(Game.WIDTH / 2, Game.HEIGHT - 120);
-            Game.MULT_TEXT.alpha = 0;
-            Game.TIMER_TEXT = new Text("-:--");
-            Game.TIMER_TEXT.style = new TextStyle({
+            _this._comboText.anchor.set(0.5);
+            _this._comboText.position.set(Game.WIDTH / 2, Game.HEIGHT - 120);
+            _this._comboText.alpha = 0;
+            _this._timerText = new Text("-:--");
+            _this._timerText.style = new TextStyle({
                 fontSize: 68, fontFamily: "Unispace", fill: '#00ccff', align: "center", fontWeight: "600",
                 dropShadow: true,
                 dropShadowDistance: 6,
                 dropShadowBlur: 5,
             });
-            Game.TIMER_TEXT.anchor.set(0.5);
-            Game.TIMER_TEXT.position.set(Game.WIDTH * 0.8, 150);
-            _this.soundSwitcher = new switcher_js_1.Switcher(Game.RES.soundSwitcherOn.texture, Game.RES.soundSwitcherOff.texture);
-            _this.soundSwitcher.position.set(Game.WIDTH * 0.2, 140);
-            _this.soundSwitcher.scale.set(0.8);
-            _this.restartButton = new button_js_1.MenuButton("RESTART");
-            _this.restartButton.on('click', function () {
+            _this._timerText.anchor.set(0.5);
+            _this._timerText.position.set(Game.WIDTH * 0.8, 150);
+            _this._soundSwitcher = new switcher_js_1.Switcher(Game.RES.soundSwitcherOn.texture, Game.RES.soundSwitcherOff.texture);
+            _this._soundSwitcher.position.set(Game.WIDTH * 0.2, 140);
+            _this._soundSwitcher.scale.set(0.8);
+            _this._restartButton = new button_js_1.MenuButton("RESTART");
+            _this._restartButton.on('click', function () {
                 var game = new Game(Game.RES);
                 this.parent.addChild(game);
                 this.destroy();
             }.bind(_this));
-            Sound.registerSound("/resources/assets/sounds/ambient.mp3", Game.ambientSound);
-            Sound.registerSound("/resources/assets/sounds/select.mp3", Game.selectSound);
-            Sound.registerSound("/resources/assets/sounds/unselect.mp3", Game.unselectSound);
-            Sound.registerSound("/resources/assets/sounds/destroy.mp3", Game.destroySound);
-            Sound.registerSound("/resources/assets/sounds/press.mp3", Game.pressSound);
-            Sound.on("fileload", _this.eventLoad, Game.ambientSound);
-            _this.addChild(_this.backgroundSprite);
-            _this.addChild(Game.MULT_TEXT);
-            _this.addChild(Game.TIMER_TEXT);
-            _this.addChild(_this.FIELD);
-            _this.addChild(_this.soundSwitcher);
+            Sound.registerSound("/resources/assets/sounds/ambient.mp3", Game.AMBIENT_SOUND);
+            Sound.registerSound("/resources/assets/sounds/select.mp3", Game.SELECT_SOUND);
+            Sound.registerSound("/resources/assets/sounds/unselect.mp3", Game.UNSELECT_SOUND);
+            Sound.registerSound("/resources/assets/sounds/destroy.mp3", Game.DESTROY_SOUND);
+            Sound.registerSound("/resources/assets/sounds/press.mp3", Game.PRESS_SOUND);
+            Sound.on("fileload", _this.eventLoad, Game.AMBIENT_SOUND);
+            _this.addChild(_this._backgroundSprite);
+            _this.addChild(_this._field);
+            _this.addChild(_this._comboText);
+            _this.addChild(_this._timerText);
+            _this.addChild(_this._soundSwitcher);
             // Задержка падения шариков после начала игры
-            setTimeout(function () {
-                this.addChild(Game.SCORE_TEXT);
-                this.FIELD.destroyField();
-                this.FIELD.generateField();
-            }.bind(_this), 200);
+            var tl = new TimelineMax({
+                repeat: 1, repeatDelay: 0.2, onComplete: function () {
+                    this.addChild(this._scoreText);
+                    this._field.generateField();
+                }.bind(_this)
+            });
             return _this;
         }
+        Object.defineProperty(Game.prototype, "state", {
+            get: function () {
+                return this._state;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Game.prototype.comboEnd = function () {
+            this._combo = 0;
+            TweenMax.to(this._comboText, 0.5, { alpha: 0 });
+            if (this._state == GAMEOVER) {
+                this.endGame();
+            }
+        };
+        Game.prototype.comboUp = function () {
+            if (this._combo == 0) {
+                TweenMax.to(this._comboText, 0.2, { alpha: 1 });
+            }
+            else {
+                TweenMax.fromTo(this._comboText.scale, 1, { x: 1, y: 1 }, { x: 0.75, y: 0.75 });
+            }
+            this._combo += 1;
+            this._comboText.text = "x" + this._combo.toString();
+            this._score += 50 * this._combo;
+            this._scoreText.text = this._score.toString();
+        };
         // Обработчик проигрывания фоновой музыки
         Game.prototype.eventLoad = function () {
-            createjs.Sound.play(Game.ambientSound, createjs.Sound.INTERRUPT_ANY, 0, 0, -1, 0.5);
+            createjs.Sound.play(Game.AMBIENT_SOUND, createjs.Sound.INTERRUPT_ANY, 0, 0, -1, 0.5);
         };
         // Старт таймера ограничения времени игры
         Game.prototype.startTimer = function () {
-            this._time = 301;
-            setInterval(function () {
-                this.timerUpdate();
-            }.bind(this), 1000);
-            this.timerUpdate();
+            this._time = this._timeToPlay;
+            this._state = INGAME;
+            this.setTimerText();
+            this._timer = new TimelineMax({ repeat: this._timeToPlay, repeatDelay: 1, onComplete: this.onTimerEnd.bind(this), onRepeat: this.onTimerTick.bind(this) });
         };
-        // Обработчик обновления таймера
-        Game.prototype.timerUpdate = function () {
-            this._time -= 1;
-            if (this._time == 0) {
-                this.FIELD.switchInteractive(false);
-                TweenLite.to(this.FIELD, 2, { alpha: 0 });
-                TweenLite.to(Game.SCORE_TEXT, 2, { x: Game.WIDTH / 2, y: Game.HEIGHT * 0.45 });
-                TweenLite.to(Game.SCORE_TEXT.scale, 2, { x: 1.5, y: 1.5 });
-                Game.GAMEOVER = true;
-                this.addChild(this.restartButton);
-                this.restartButton.sprite.interactive = false;
-                TweenLite.fromTo(this.restartButton, 2, { x: Game.WIDTH / 2, y: Game.HEIGHT - 300, alpha: 0 }, { x: Game.WIDTH / 2, y: Game.HEIGHT * 0.55, alpha: 1 });
-                Game.WIDTH * 0.5, Game.HEIGHT * 0.65;
-                setTimeout(function () {
-                    this.restartButton.sprite.interactive = true;
-                }.bind(this), 2000);
-            }
-            if (this._time < 0)
-                return;
+        // Установка времени на таймере
+        Game.prototype.setTimerText = function () {
             var sec = this._time % 60;
             var min = (this._time - sec) / 60;
-            var kostil = (sec < 10) ? "0" : "";
-            Game.TIMER_TEXT.text = min.toString() + ":" + kostil + sec.toString();
+            var keyChar = (sec < 10) ? "0" : "";
+            this._timerText.text = min.toString() + ":" + keyChar + sec.toString();
+        };
+        // Обработчик обновления таймера
+        Game.prototype.onTimerTick = function () {
+            this._time -= 1;
+            this.setTimerText();
+        };
+        // Перерисовка текстового поля после окончания таймера
+        Game.prototype.onTimerEnd = function () {
+            this._time = 0;
+            this.setTimerText();
+            this._state = GAMEOVER;
+            // not in combo
+            if (this._combo == 0) {
+                this.endGame();
+            }
+        };
+        Game.prototype.endGame = function () {
+            this._field.switchInteractive(false);
+            TweenMax.to(this._field, 2, { alpha: 0 });
+            TweenMax.to(this._scoreText, 2, { x: Game.WIDTH / 2, y: Game.HEIGHT * 0.45 });
+            TweenMax.to(this._scoreText.scale, 2, { x: 1.5, y: 1.5 });
+            this.addChild(this._restartButton);
+            this._restartButton.sprite.interactive = false;
+            var tl = new TimelineMax({
+                onComplete: function () {
+                    this._restartButton.sprite.interactive = true;
+                }.bind(this)
+            });
+            tl.fromTo(this._restartButton, 2, { x: Game.WIDTH / 2, y: Game.HEIGHT - 300, alpha: 0 }, { x: Game.WIDTH / 2, y: Game.HEIGHT * 0.55, alpha: 1 });
         };
         Game.WIDTH = 720;
         Game.HEIGHT = 1280;
-        Game.selectSound = "Select";
-        Game.unselectSound = "Unselect";
-        Game.destroySound = "Destroy";
-        Game.pressSound = "Press";
-        Game.ambientSound = "Ambient";
+        Game.SELECT_SOUND = "Select";
+        Game.UNSELECT_SOUND = "Unselect";
+        Game.DESTROY_SOUND = "Destroy";
+        Game.PRESS_SOUND = "Press";
+        Game.AMBIENT_SOUND = "Ambient";
         return Game;
     }(Container));
     exports.Game = Game;

@@ -1,134 +1,161 @@
-import Application = PIXI.Application;
-import Sprite = PIXI.Sprite;
 import Container = PIXI.Container;
-import { MenuButton } from "./button.js";
+import Graphics = PIXI.Graphics;
 import { Game } from "./game.js";
 import { Tile } from "./tile.js"
-declare let TweenLite: any; // https://greensock.com/forums/topic/15365-not-able-to-move-div-in-angular-2/
+
+declare let TweenMax: any;
+declare let TimelineMax: any;
 
 export class Field extends Container {
 
-    private tiles: Tile[][];
-    private matches: any = [];
-
     public selectedTile: Tile;
+
+    private _tiles: Tile[][]; // _tiles
+    private _ores: number = 6;
+
+    private _rectMask: Graphics;
+    private _background: Graphics;
 
     constructor() {
         super();
+
+        this._rectMask = new Graphics();
+        this.addChild(this._rectMask);
+
+        this._rectMask.position.x = 0;
+        this._rectMask.position.y = 0;
+        this._rectMask.lineStyle(0);
+        this._rectMask.beginFill(0xffffff, 1);
+        this._rectMask.drawRect((Game.WIDTH - 8 * 75) / 2, (Game.HEIGHT - 8 * 75) / 2 + 100, 75 * 8, 75 * 8);
+
+        this.mask = this._rectMask;
+
+        this._background = new Graphics();
+
+        this._background.position.x = 0;
+        this._background.position.y = 0;
+        this._background.lineStyle(0);
+        this._background.beginFill(0x00ccff, 0.05);
+        this._background.drawRect((Game.WIDTH - 8 * 75) / 2, (Game.HEIGHT - 8 * 75) / 2 + 100, 75 * 8, 75 * 8);
+
     }
 
     // Генерация игрового поля заполненного тайлами
-    public generateField() {
-        this.tiles = null;
-        this.tiles = new Array<Tile[]>(8);
+    public generateField(): void {
+        if (this._tiles != null) {
+            this.destroyField();
+            this._tiles = null;
+        }
+        this._tiles = new Array<Tile[]>(8);
 
         let tileSize = 75;
         let paddingX = (Game.WIDTH - 8 * tileSize) / 2;
         let paddingY = (Game.HEIGHT - 8 * tileSize) / 2 + 100;
 
         for (let i = 0; i < 8; i++) {
-            this.tiles[i] = new Array<Tile>(8);
+            this._tiles[i] = new Array<Tile>(8);
             for (let j = 0; j < 8; j++) {
-                let type = Math.floor(Math.random() * 6) + 1
-                this.tiles[i][j] = new Tile(this, type, [i, j]);
-                this.tiles[i][j].setType(type, 1.5, 8);
-                this.tiles[i][j].position.set(paddingX + j * tileSize, paddingY + i * tileSize);
-                this.addChild(this.tiles[i][j]);
+                let type = Math.floor(Math.random() * this._ores) + 1
+                this._tiles[i][j] = new Tile(this, type, [i, j]);
+                this._tiles[i][j].position.set(paddingX + j * tileSize, paddingY + i * tileSize);
+                this.addChild(this._tiles[i][j]);
+                this._tiles[i][j].setType(type, 1.5, 8);
             }
         }
+        this.addChild(this._background);
 
         // Блокировка шариков в полёте
         this.switchInteractive(false);
-        setTimeout(function () {
-            this.animateDestroy(this.findMatches());
-            this.parent.startTimer();
-        }.bind(this), 1700);
+        let tl = new TimelineMax({ repeat: 1, repeatDelay: 1.7, onComplete: this.startGame.bind(this) });
+    }
+
+    // Старт игры
+    private startGame(): void {
+        this.parent.emit("eventStartTimer");
+        this.animateDestroy(this.findMatches());
+    }
+
+    private checkField(): void {
+        this.animateDestroy(this.findMatches());
     }
 
     // Генерация тайлов после их уничтожения
-    public generateTiles() {
-        for (var i = 0; i < this.tiles.length; i++) {
-            for (var j = 0; j < this.tiles[i].length; j++) {
-                if (this.tiles[i][j].type == 0)
-                    this.tiles[i][j].setType(Math.floor(Math.random() * 6) + 1, 0.5, 2);
+    private generateTiles(): void {
+        for (let i = 0; i < this._tiles.length; i++) {
+            for (let j = 0; j < this._tiles[i].length; j++) {
+                if (this._tiles[i][j].type == 0)
+                    this._tiles[i][j].setType(Math.floor(Math.random() * this._ores) + 1, 0.5, 2);
             }
         }
-        setTimeout(function () {
-            if (!Game.GAMEOVER) {
-                this.animateDestroy(this.findMatches());
-            } else {
-                Game.MULT = 0;
-                TweenLite.to(Game.MULT_TEXT, 0.5, { alpha: 0 });
-                this.switchInteractive(true);
-            }
-        }.bind(this), 500);
+
+        let tl = new TimelineMax({ repeat: 1, repeatDelay: 0.5, onComplete: this.checkField.bind(this) });
     }
-    
+
     // Унтичтожение игрового поля
-    public destroyField() {
-        if (this.tiles == null) return;
+    private destroyField(): void {
+        if (this._tiles == null) return;
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
-                this.tiles[i][j].destroy();
+                this._tiles[i][j].destroy();
             }
         }
     }
-    
+
     // Переключатель воздействия на элементы пользователем
-    public switchInteractive(interactive: boolean) {
-        for (var i = 0; i < this.tiles.length; i++) {
-            for (var j = 0; j < this.tiles[i].length; j++) {
-                this.tiles[i][j].switchInteractive(interactive);
+    public switchInteractive(interactive: boolean): void {
+        for (let i = 0; i < this._tiles.length; i++) {
+            for (let j = 0; j < this._tiles[i].length; j++) {
+                this._tiles[i][j].switchInteractive(interactive);
             }
         }
     }
 
     // Подсветка соседнего тайла, елси онн образует новую комбинацию
-    public createsNewMatch(s: Tile, n: Tile) {
-        var temp = n.type;
-        var currentMatches = this.findMatches().length;
+    public createsNewMatch(s: Tile, n: Tile): boolean {
+        let temp = n.type;
+        let currentMatches = this.findMatches().length;
         n.type = s.type;
         s.type = temp;
-        var newMatches = this.findMatches().length;
+        let newMatches = this.findMatches().length;
         s.type = n.type;
         n.type = temp;
 
         if (newMatches > currentMatches) {
             return true;
         }
-        
+
         return false;
     }
 
     // Подсветка клеток на которые возможно походить
-    public highlightNeighbours(a: Tile) {
+    public highlightNeighbours(a: Tile): void {
         // Верхний равен верхнему тайлу от текущего и проверки строки над вернхим тайлом, либо null
-        var upper = this.tiles[a.pos.x - 1] && this.tiles[a.pos.x - 1][a.pos.y];
-        var right = this.tiles[a.pos.x] && this.tiles[a.pos.x][a.pos.y + 1];
-        var bottom = this.tiles[a.pos.x + 1] && this.tiles[a.pos.x + 1][a.pos.y];
-        var left = this.tiles[a.pos.x] && this.tiles[a.pos.x][a.pos.y - 1];
+        let upper = this._tiles[a.pos.x - 1] && this._tiles[a.pos.x - 1][a.pos.y];
+        let right = this._tiles[a.pos.x] && this._tiles[a.pos.x][a.pos.y + 1];
+        let bottom = this._tiles[a.pos.x + 1] && this._tiles[a.pos.x + 1][a.pos.y];
+        let left = this._tiles[a.pos.x] && this._tiles[a.pos.x][a.pos.y - 1];
 
         if (upper && this.createsNewMatch(a, upper)) {
             upper.highlight();
         }
         if (right && this.createsNewMatch(a, right)) {
-            right.highlight();  
-        } 
+            right.highlight();
+        }
         if (bottom && this.createsNewMatch(a, bottom)) {
             bottom.highlight();
-        } 
+        }
         if (left && this.createsNewMatch(a, left)) {
             left.highlight();
         }
     }
 
     //  Отключение подсветки клеток на которые возможно походить
-    public unHighlightNeighbours(a: Tile) {
+    public unHighlightNeighbours(a: Tile): void {
         // Верхний равен верхнему тайлу от текущего и проверки строки над вернхим тайлом, либо null
-        var upper = this.tiles[a.pos.x - 1] && this.tiles[a.pos.x - 1][a.pos.y];
-        var right = this.tiles[a.pos.x] && this.tiles[a.pos.x][a.pos.y + 1];
-        var bottom = this.tiles[a.pos.x + 1] && this.tiles[a.pos.x + 1][a.pos.y];
-        var left = this.tiles[a.pos.x] && this.tiles[a.pos.x][a.pos.y - 1];
+        let upper = this._tiles[a.pos.x - 1] && this._tiles[a.pos.x - 1][a.pos.y];
+        let right = this._tiles[a.pos.x] && this._tiles[a.pos.x][a.pos.y + 1];
+        let bottom = this._tiles[a.pos.x + 1] && this._tiles[a.pos.x + 1][a.pos.y];
+        let left = this._tiles[a.pos.x] && this._tiles[a.pos.x][a.pos.y - 1];
 
         if (upper && upper.highlighted) upper.unHighlight();
         if (right && right.highlighted) right.unHighlight();
@@ -137,95 +164,84 @@ export class Field extends Container {
     }
 
     // Гравитация или генерация шариков
-    public dropTiles() {
-        var shiftsCounter = this.dropLine();
-        setTimeout(function () {
-            if (shiftsCounter > 0) {
-                this.dropTiles();  
-            } else {
-                this.generateTiles();
-            } 
-        }.bind(this), 225);
+    public dropTiles(): void {
+        let shiftsCounter = this.dropLine();
+        let tl = new TimelineMax({
+            repeat: 1, repeatDelay: 0.25, onComplete: function (): void {
+                if (shiftsCounter > 0) {
+                    this.dropTiles();
+                } else {
+                    this.generateTiles();
+                }
+            }.bind(this)
+        });
     }
 
     // Сдвиг шариков, если над пустой клеткой есть шарик
-    public dropLine() {
-        var shiftsCounter = 0;
-        for (let j = 0; j < this.tiles.length; j++) {
-            for (let i = this.tiles[j].length - 1; i >= 0; i--) {
-                if (this.tiles[i][j].type == 0) {
-                    if (this.tiles[i - 1]) {
-                        if (this.tiles[i - 1][j].type != 0) shiftsCounter += 1;
-                        this.tiles[i][j].setType(this.tiles[i - 1][j].type, 0.2);
-                        this.tiles[i - 1][j].setType(0);
+    public dropLine(): number {
+        let shiftsCounter = 0;
+        for (let j = 0; j < this._tiles.length; j++) {
+            for (let i = this._tiles[j].length - 1; i >= 0; i--) {
+                if (this._tiles[i][j].type == 0) {
+                    if (this._tiles[i - 1]) {
+                        if (this._tiles[i - 1][j].type != 0) shiftsCounter += 1;
+                        this._tiles[i][j].setType(this._tiles[i - 1][j].type, 0.2);
+                        this._tiles[i - 1][j].setType(0);
                     }
                 }
             }
         }
         return shiftsCounter;
     }
-    
+
     // Удаление совпадений
-    public destroyMatches(matches: Tile[][]) {
-        for (var i = 0; i < matches.length; i++) {
-            for (var j = 0; j < matches[i].length; j++) {
-                var t = matches[i][j];
-                Game.MULT += 1;
-                Game.MULT_TEXT.text = "x" + Game.MULT.toString();
-                if (Game.MULT == 1) {
-                    TweenLite.to(Game.MULT_TEXT, 0.2, { alpha: 1 });
-                }
-                Game.SCORE += 50 * Game.MULT;
-                Game.SCORE_TEXT.text = Game.SCORE.toString();
-                this.tiles[t.pos.x][t.pos.y].setType(0);
+    public destroyMatches(matches: Tile[][]): void {
+        for (let i = 0; i < matches.length; i++) {
+            for (let j = 0; j < matches[i].length; j++) {
+                let t = matches[i][j];
+                this._tiles[t.pos.x][t.pos.y].setType(0);
             }
         }
-        
-        setTimeout(function () {
-            this.dropTiles();
-        }.bind(this), 250);       
+        let tl = new TimelineMax({ repeat: 1, repeatDelay: 0.25, onComplete: this.dropTiles.bind(this) });
     }
     
     // Анимация удаления совпадений
-    public animateDestroy(matches: any) {
+    public animateDestroy(matches: any): void {
         if (matches.length > 0) {
             this.switchInteractive(false);
-            for (var i = 0; i < matches.length; i++) {
-                for (var j = 0; j < matches[i].length; j++) {
-                    TweenLite.to(matches[i][j].item, 0.4, { alpha: 0, rotation: 2.5});
-                    TweenLite.to(matches[i][j].item.scale, 0.4, { x: 0, y: 0});
+            for (let i = 0; i < matches.length; i++) {
+                for (let j = 0; j < matches[i].length; j++) {
+                    this.parent.emit("eventComboUp");
+                    TweenMax.to(matches[i][j].item, 0.4, { alpha: 0, rotation: 2.5 });
+                    TweenMax.to(matches[i][j].item.scale, 0.4, { x: 0, y: 0 });
                 }
             }
-
-            createjs.Sound.play(Game.destroySound, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 1);
-            setTimeout(function () {
-                this.destroyMatches(matches);
-            }.bind(this), 425);
+            createjs.Sound.play(Game.DESTROY_SOUND, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 1);
+            let tl = new TimelineMax({ repeat: 1, repeatDelay: 0.425, onComplete: this.destroyMatches.bind(this, matches) });
         } else {
-            Game.MULT = 0;
-            TweenLite.to(Game.MULT_TEXT, 0.5, { alpha: 0 });
             this.switchInteractive(true);
+            this.parent.emit("eventComboEnd");
         }
     }
 
     // Поиск возможных совпадений по горизонтали и цвертикали
-    public findMatches() {
-        var v_matches: Tile[][] = new Array();
-        var h_matches: Tile[][] = new Array();
-        var v_temp: Tile[];
-        var h_temp: Tile[];
-        
-        var matches: any[] = new Array();
-        
-        for (var i = 0; i < this.tiles.length; i++) {
-            for (var j = 1; j < this.tiles[i].length; j++) {
-                if (this.tiles[i][j].type == this.tiles[i][j - 1].type && this.tiles[i][j].type != 0) {
+    public findMatches(): Tile[][] {
+        let v_matches: Tile[][] = new Array();
+        let h_matches: Tile[][] = new Array();
+        let v_temp: Tile[];
+        let h_temp: Tile[];
+
+        let matches: Tile[][] = new Array();
+
+        for (let i = 0; i < this._tiles.length; i++) {
+            for (let j = 1; j < this._tiles[i].length; j++) {
+                if (this._tiles[i][j].type == this._tiles[i][j - 1].type && this._tiles[i][j].type != 0) {
                     if (h_temp == null) {
                         h_temp = new Array();
-                        h_temp.push(this.tiles[i][j]);
-                        h_temp.push(this.tiles[i][j - 1]);
+                        h_temp.push(this._tiles[i][j]);
+                        h_temp.push(this._tiles[i][j - 1]);
                     } else {
-                        h_temp.push(this.tiles[i][j]);
+                        h_temp.push(this._tiles[i][j]);
                     }
                 } else {
                     if (h_temp != null) {
@@ -246,15 +262,15 @@ export class Field extends Container {
             }
         }
 
-        for (var j = 0; j < this.tiles.length; j++) {
-            for (var i = 1; i < this.tiles[j].length; i++) {
-                if (this.tiles[i][j].type == this.tiles[i - 1][j].type && this.tiles[i][j].type != 0) {
+        for (let j = 0; j < this._tiles.length; j++) {
+            for (let i = 1; i < this._tiles[j].length; i++) {
+                if (this._tiles[i][j].type == this._tiles[i - 1][j].type && this._tiles[i][j].type != 0) {
                     if (v_temp == null) {
                         v_temp = new Array();
-                        v_temp.push(this.tiles[i][j]);
-                        v_temp.push(this.tiles[i - 1][j]);
+                        v_temp.push(this._tiles[i][j]);
+                        v_temp.push(this._tiles[i - 1][j]);
                     } else {
-                        v_temp.push(this.tiles[i][j]);
+                        v_temp.push(this._tiles[i][j]);
                     }
                 } else {
                     if (v_temp != null) {
@@ -276,17 +292,17 @@ export class Field extends Container {
         }
 
         if (v_matches.length > 0) {
-            for (var i = 0; i < v_matches.length; i++) {
+            for (let i = 0; i < v_matches.length; i++) {
                 matches.push(v_matches[i]);
             }
         }
 
         if (h_matches.length > 0) {
-            for (var i = 0; i < h_matches.length; i++) {
+            for (let i = 0; i < h_matches.length; i++) {
                 matches.push(h_matches[i]);
             }
         }
 
-        return(matches);
+        return (matches);
     }
 }

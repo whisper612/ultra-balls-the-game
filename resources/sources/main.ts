@@ -1,7 +1,7 @@
 import Application = PIXI.Application;
 import Loader = PIXI.Loader;
-import {Game} from "./game.js"
-import {Button} from "./button.js"
+import { Game } from "./game.js"
+import { Button } from "./button.js"
 
 const loader: Loader = new Loader();
 
@@ -52,12 +52,12 @@ window.onresize = eventListenerResize;
 
 // Функция вызываемая после подгрузки ресурсов
 function setup(loader: Loader, resources: any): void {
-    
+
     document.body.appendChild(app.view);
 
     loadGameButton = new Button(resources.playButtonNormal.texture, resources.playButtonPressed.texture);
     loadGameButton.position.set(Game.WIDTH / 2, Game.HEIGHT / 2);
-    loadGameButton.on('click', function () {        
+    loadGameButton.on('click', function (): void {
         let game: Game = new Game(resources);
         app.stage.addChild(game);
         app.stage.removeChild(loadGameButton);
