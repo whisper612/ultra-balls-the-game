@@ -26,7 +26,7 @@ define(["require", "exports", "./field.js", "./switcher.js", "./button.js"], fun
         __extends(Game, _super);
         function Game(resources) {
             var _this = _super.call(this) || this;
-            _this._timeToPlay = 15;
+            _this._timeToPlay = 180;
             Game.RES = resources;
             _this._score = 0;
             _this._combo = 0;
@@ -63,7 +63,7 @@ define(["require", "exports", "./field.js", "./switcher.js", "./button.js"], fun
                 fontSize: 68, fontFamily: "Unispace", fill: '#00ccff', align: "center", fontWeight: "600",
                 dropShadow: true,
                 dropShadowDistance: 6,
-                dropShadowBlur: 5,
+                dropShadowBlur: 5
             });
             _this._timerText.anchor.set(0.5);
             _this._timerText.position.set(Game.WIDTH * 0.8, 150);

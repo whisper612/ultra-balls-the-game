@@ -112,24 +112,29 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
             }
             return false;
         };
+        Field.prototype.areNeighbours = function (a, b) {
+            if (b === void 0) { b = this.selectedTile; }
+            return (Math.abs(a.pos.x - b.pos.x) + Math.abs(a.pos.y - b.pos.y)) == 1;
+        };
         // Подсветка клеток на которые возможно походить
-        Field.prototype.highlightNeighbours = function (a) {
+        Field.prototype.highlightNeighbours = function (a, hide) {
+            if (hide === void 0) { hide = false; }
             // Верхний равен верхнему тайлу от текущего и проверки строки над вернхим тайлом, либо null
             var upper = this._tiles[a.pos.x - 1] && this._tiles[a.pos.x - 1][a.pos.y];
             var right = this._tiles[a.pos.x] && this._tiles[a.pos.x][a.pos.y + 1];
             var bottom = this._tiles[a.pos.x + 1] && this._tiles[a.pos.x + 1][a.pos.y];
             var left = this._tiles[a.pos.x] && this._tiles[a.pos.x][a.pos.y - 1];
             if (upper && this.createsNewMatch(a, upper)) {
-                upper.highlight();
+                upper.highlight(hide);
             }
             if (right && this.createsNewMatch(a, right)) {
-                right.highlight();
+                right.highlight(hide);
             }
             if (bottom && this.createsNewMatch(a, bottom)) {
-                bottom.highlight();
+                bottom.highlight(hide);
             }
             if (left && this.createsNewMatch(a, left)) {
-                left.highlight();
+                left.highlight(hide);
             }
         };
         //  Отключение подсветки клеток на которые возможно походить
@@ -195,7 +200,7 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                 this.switchInteractive(false);
                 for (var i = 0; i < matches.length; i++) {
                     for (var j = 0; j < matches[i].length; j++) {
-                        this.parent.emit("eventComboUp"); // не должно нихуя поломать, но если че вдруг TODO: тут мб косяк 
+                        this.parent.emit("eventComboUp");
                         TweenMax.to(matches[i][j].item, 0.4, { alpha: 0, rotation: 2.5 });
                         TweenMax.to(matches[i][j].item.scale, 0.4, { x: 0, y: 0 });
                     }

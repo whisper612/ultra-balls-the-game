@@ -127,8 +127,12 @@ export class Field extends Container {
         return false;
     }
 
+    public areNeighbours(a: Tile, b: Tile = this.selectedTile): boolean {
+        return (Math.abs(a.pos.x - b.pos.x) + Math.abs(a.pos.y - b.pos.y)) == 1
+    }
+
     // Подсветка клеток на которые возможно походить
-    public highlightNeighbours(a: Tile): void {
+    public highlightNeighbours(a: Tile, hide: boolean = false): void {
         // Верхний равен верхнему тайлу от текущего и проверки строки над вернхим тайлом, либо null
         let upper = this._tiles[a.pos.x - 1] && this._tiles[a.pos.x - 1][a.pos.y];
         let right = this._tiles[a.pos.x] && this._tiles[a.pos.x][a.pos.y + 1];
@@ -136,16 +140,16 @@ export class Field extends Container {
         let left = this._tiles[a.pos.x] && this._tiles[a.pos.x][a.pos.y - 1];
 
         if (upper && this.createsNewMatch(a, upper)) {
-            upper.highlight();
+            upper.highlight(hide);
         }
         if (right && this.createsNewMatch(a, right)) {
-            right.highlight();
+            right.highlight(hide);
         }
         if (bottom && this.createsNewMatch(a, bottom)) {
-            bottom.highlight();
+            bottom.highlight(hide);
         }
         if (left && this.createsNewMatch(a, left)) {
-            left.highlight();
+            left.highlight(hide);
         }
     }
 

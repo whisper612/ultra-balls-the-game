@@ -33,7 +33,7 @@ export class Tile extends Container {
     ];
     private _state: number;
 
-    protected pressedAlpha: number = 0.4;
+    protected pressedAlpha: number = 0.3;
     protected isOver: boolean = true;
     protected isDown: boolean = false;
 
@@ -105,10 +105,18 @@ export class Tile extends Container {
             TweenMax.fromTo(this.item, 0.3, { alpha: this.item.alpha }, { alpha: this.pressedAlpha });
             this._field.selectedTile = this;
             this.setState(SELECTED);
-            this._field.highlightNeighbours(this);
+            this._field.highlightNeighbours(this, true);
             createjs.Sound.play(Game.SELECT_SOUND, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.05);
         } else {
-            this.swap();
+            if (this.highlighted) {
+                this.swap();
+            } else {
+                let temp = !this._field.areNeighbours(this); 
+                this._field.selectedTile.deselect();
+                if (temp) {
+                    this.select();
+                }
+            }
         }
     }
 
@@ -127,38 +135,45 @@ export class Tile extends Container {
 
     // Смена позиций двух шариков между друг другом
     public swap(): void {
-        if (this.highlighted) {
-            this._field.switchInteractive(false);
-            this._field.unHighlightNeighbours(this._field.selectedTile);
-            let y1 = (this._field.selectedTile.pos.x - this.pos.x) * 75;
-            let x1 = (this._field.selectedTile.pos.y - this.pos.y) * 75;
+        this._field.switchInteractive(false);
+        this._field.unHighlightNeighbours(this._field.selectedTile);
+        let y1 = (this._field.selectedTile.pos.x - this.pos.x) * 75;
+        let x1 = (this._field.selectedTile.pos.y - this.pos.y) * 75;
 
-            this._field.selectedTile.item.alpha = 1;
-            this.item.alpha = 1;
+        this._field.selectedTile.item.alpha = 1;
+        this.item.alpha = 1;
 
-            var game: Game = this.parent.parent as Game;
+        var game: Game = this.parent.parent as Game;
 
-            let tl = new TimelineMax({
-                repeat: 1, repeatDelay: 0.8, onComplete: function (): void {
-                    if (game.state != 2) {
-                        let temp = this.type;
-                        this.setType(this._field.selectedTile.type);
-                        this._field.selectedTile.setType(temp);
-                        TweenMax.set(this.item, { x: 37.5, y: 37.5 });
-                        TweenMax.set(this._field.selectedTile.item, { x: 37.5, y: 37.5 });
-                        this._field.selectedTile.deselect(false);
-    
-                        let matches = this._field.findMatches();
-    
-                        this._field.animateDestroy(matches);
-                    }
-                }.bind(this)
-            });
+        let tl = new TimelineMax({
+            repeat: 1, repeatDelay: 0.8, onComplete: function (): void {
+                if (game.state != 2) {
+                    let temp = this.type;
+                    this.setType(this._field.selectedTile.type);
+                    this._field.selectedTile.setType(temp);
+                    TweenMax.set(this.item, { x: 37.5, y: 37.5 });
+                    TweenMax.set(this._field.selectedTile.item, { x: 37.5, y: 37.5 });
+                    this._field.selectedTile.deselect(false);
 
-            TweenMax.to(this.item, 0.75, { x: this.item.x + x1, y: this.item.y + y1 });
-            TweenMax.to(this._field.selectedTile.item, 0.75, { x: this.item.x - x1, y: this.item.y - y1 });
-        }
+                    let matches = this._field.findMatches();
+
+                    this._field.animateDestroy(matches);
+                }
+            }.bind(this)
+        });
+        
+        TweenMax.to(this.item, 0.75, { x: this.item.x + x1, y: this.item.y + y1 });
+        TweenMax.to(this._field.selectedTile.item, 0.75, { x: this.item.x - x1, y: this.item.y - y1 });
     }
+
+    // 3) Убрать выделение с клеток, вместо этого чётко выделять выбранный шар можно начать с этого он хочет чтоб не клетка светилась а шарик ? Да, чтобы не было подсказок ваще принял.  можем функционал подсказок оставть в коде, но просто не юзать. двруг пригодится потом ++
+    // Первый шар можно выбрать всегда, если клик происходит в клетку, куда поставить шар нельзя, то выбор сбрасывается. При первом выбранном шаре можно переключиться на любой другой, который дальше соседней клетки.
+    // Вот тут сложно но ща поясню. Чё он хочет. Корч. 
+    // 1)При нажатии на шар, он выделяется в любом случае, но только он.
+    // 2)При клике в соседнюю клетку, он свапнется только в случае верной комбинации, если !комбинации, то прозойдёт анпик шарик
+    // 3)При клике дальше соседней клетки  i+2 должен происходить репик на кликнутый шар
+    // Как-то так
+    // понял, есть идея как подсвечивать шарики.энивей надо зарезать до 75 мы же скейлим на 0.8 да, знаю. но это ты сам протом сможешь сделать, а это залуп,
 
     // Установка типа шарика
     public setType(t: number, fall: number = 0, mult: number = 1): void {
@@ -173,8 +188,8 @@ export class Tile extends Container {
     }
 
     // Подсветка клетки
-    public highlight(): void {
-        if (this._background.texture == this._fieldTextures[0]) {
+    public highlight(hide: boolean = false): void {
+        if (this._background.texture == this._fieldTextures[0] && !hide) {
             this._background.texture = this._fieldTextures[1];
         }
         this.highlighted = true;
