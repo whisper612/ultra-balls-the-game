@@ -17,3 +17,7 @@ app.use('/resources', express.static('resources'));
 app.get('/', (req, res) => {
     res.sendFile('pixi.html', { root: 'resources/sources'});
 });
+
+app.get('/pixi', (req, res) => {
+    res.sendFile('pixi.html', { root: 'resources/sources' });
+});
