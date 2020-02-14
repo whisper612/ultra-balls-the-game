@@ -26,7 +26,7 @@ define(["require", "exports", "./field.js", "./switcher.js", "./button.js"], fun
         __extends(Game, _super);
         function Game(resources) {
             var _this = _super.call(this) || this;
-            _this._timeToPlay = 180;
+            _this._timeToPlay = 300;
             Game.RES = resources;
             _this._score = 0;
             _this._combo = 0;

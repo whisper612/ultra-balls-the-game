@@ -14,6 +14,6 @@ app.listen(PORT, (err) => {
 app.use('/resources', express.static('resources'));
 
 // Router
-app.get('/pixi', (req, res) => {
+app.get('/', (req, res) => {
     res.sendFile('pixi.html', { root: 'resources/sources'});
 });

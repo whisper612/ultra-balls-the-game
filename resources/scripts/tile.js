@@ -15,13 +15,19 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Sprite = PIXI.Sprite;
+    var Graphics = PIXI.Graphics;
     var Container = PIXI.Container;
+    var ColorMatrixFilter = PIXI.filters.ColorMatrixFilter;
     var IDLE = 0;
     var SELECTED = 1;
     var Tile = /** @class */ (function (_super) {
         __extends(Tile, _super);
         function Tile(field, type, pos) {
             var _this = _super.call(this) || this;
+            _this.pos = {
+                "x": 0,
+                "y": 0
+            };
             _this._itemTextures = [
                 // Пустая клетка
                 null,
@@ -40,12 +46,17 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             _this.pressedAlpha = 0.3;
             _this.isOver = true;
             _this.isDown = false;
-            _this.pos = {
-                "x": 0,
-                "y": 0
-            };
+            _this._animFilters = new ColorMatrixFilter();
             _this._background = new Sprite(game_js_1.Game.RES.field.texture);
             _this.addChild(_this._background);
+            _this._selectLight = new Graphics();
+            _this._selectLight.position.x = 0;
+            _this._selectLight.position.y = 0;
+            _this._selectLight.lineStyle(0);
+            _this._selectLight.beginFill(0xffffff, 0.5);
+            _this._selectLight.drawCircle(0, 0, 30);
+            _this._selectLight.scale.set(0.8);
+            _this._selectLight.filters = [_this._animFilters];
             _this.pos.x = pos[0];
             _this.pos.y = pos[1];
             _this.item = new Sprite();
@@ -88,10 +99,39 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
         Tile.prototype.setState = function (state) {
             this._state = state;
         };
+        // Анимация выбранного шарика
+        Tile.prototype.selectAnimate = function (count) {
+            // let count = 0;
+            this._selectLight.scale.x = 1 + Math.sin(count) * 0.05;
+            this._selectLight.scale.y = 1 + Math.cos(count) * 0.05;
+            count += 0.07;
+            this._animFilters.matrix[1] = Math.sin(count) * 3;
+            this._animFilters.matrix[2] = Math.cos(count);
+            this._animFilters.matrix[3] = Math.cos(count) * 1.5;
+            this._animFilters.matrix[4] = Math.sin(count / 3) * 2;
+            this._animFilters.matrix[5] = Math.sin(count / 2);
+            this._animFilters.matrix[6] = Math.sin(count / 4);
+            // this._animFilters.matrix[4] = Math.sin(count / 3) * 2;
+            // this._animFilters.matrix[5] = Math.sin(count / 2);
+            // this._animFilters.matrix[6] = Math.sin(count / 4); 
+            // this._animFilters.matrix[1] = Math.cos(count) + 16711680;
+            // this._animFilters.matrix[2] = Math.sin(count) / 16761600;
+            // this._animFilters.matrix[3] = Math.cos(count) * 1.5;
+            // this._animFilters.matrix[1] = 1000 + count;
+            // this._animFilters.matrix[2] = 2000 + count;
+            // this._animFilters.matrix[3] = 3000 + count;
+            // this._animFilters.matrix[4] = 4000 + count;
+            // this._animFilters.matrix[5] = 5000 + count;
+            // this._animFilters.matrix[6] = 6000 + count; 
+            requestAnimationFrame(this.selectAnimate.bind(this, count));
+        };
         // Выбор шарика
         Tile.prototype.select = function () {
             if (this._field.selectedTile == null) {
-                TweenMax.fromTo(this.item, 0.3, { alpha: this.item.alpha }, { alpha: this.pressedAlpha });
+                // TweenMax.fromTo(this.item, 0.3, { alpha: this.item.alpha }, { alpha: this.pressedAlpha });
+                this.item.addChild(this._selectLight);
+                TweenMax.fromTo(this.item.scale, 0.3, { x: 0.8, y: 0.8 }, { x: 0.92, y: 0.92 });
+                requestAnimationFrame(this.selectAnimate.bind(this, 0));
                 this._field.selectedTile = this;
                 this.setState(SELECTED);
                 this._field.highlightNeighbours(this, true);
@@ -118,7 +158,11 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             }
             this._field.unHighlightNeighbours(this);
             this.setState(IDLE);
-            TweenMax.fromTo(this.item, 0.3, { alpha: this.item.alpha }, { alpha: 1 });
+            cancelAnimationFrame(0);
+            this.item.removeChild(this._selectLight);
+            // TweenMax.fromTo(this.item, 0.3, { alpha: this.item.alpha }, { alpha: 1 });
+            TweenMax.fromTo(this.item.scale, 0.3, { x: 0.92, y: 0.92 }, { x: 0.8, y: 0.8 });
+            // this.destroy(this._selectLight);
             if (playSound) {
                 createjs.Sound.play(game_js_1.Game.UNSELECT_SOUND, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.05);
             }
@@ -149,14 +193,6 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             TweenMax.to(this.item, 0.75, { x: this.item.x + x1, y: this.item.y + y1 });
             TweenMax.to(this._field.selectedTile.item, 0.75, { x: this.item.x - x1, y: this.item.y - y1 });
         };
-        // 3) Убрать выделение с клеток, вместо этого чётко выделять выбранный шар можно начать с этого он хочет чтоб не клетка светилась а шарик ? Да, чтобы не было подсказок ваще принял.  можем функционал подсказок оставть в коде, но просто не юзать. двруг пригодится потом ++
-        // Первый шар можно выбрать всегда, если клик происходит в клетку, куда поставить шар нельзя, то выбор сбрасывается. При первом выбранном шаре можно переключиться на любой другой, который дальше соседней клетки.
-        // Вот тут сложно но ща поясню. Чё он хочет. Корч. 
-        // 1)При нажатии на шар, он выделяется в любом случае, но только он.
-        // 2)При клике в соседнюю клетку, он свапнется только в случае верной комбинации, если !комбинации, то прозойдёт анпик шарик
-        // 3)При клике дальше соседней клетки  i+2 должен происходить репик на кликнутый шар
-        // Как-то так
-        // понял, есть идея как подсвечивать шарики.энивей надо зарезать до 75 мы же скейлим на 0.8 да, знаю. но это ты сам протом сможешь сделать, а это залуп,
         // Установка типа шарика
         Tile.prototype.setType = function (t, fall, mult) {
             if (fall === void 0) { fall = 0; }

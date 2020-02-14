@@ -1,10 +1,12 @@
-import Application = PIXI.Application;
 import Sprite = PIXI.Sprite;
+import Graphics = PIXI.Graphics;
 import Container = PIXI.Container;
 import Texture = PIXI.Texture;
+import ColorMatrixFilter = PIXI.filters.ColorMatrixFilter;
 import { Field } from "./field.js";
 import { Game } from "./game.js";
 import { Button } from "./button.js";
+import { filters } from "pixi.js";
 
 let IDLE: number = 0;
 let SELECTED: number = 1;
@@ -14,6 +16,16 @@ declare let TimelineMax: any;
 
 export class Tile extends Container {
     public item: Sprite;
+    public type: number;
+    public highlighted: boolean;
+    public pos = {
+        "x": 0,
+        "y": 0
+    }
+
+    private _state: number;
+    private _animFilters: ColorMatrixFilter;
+    private _selectLight: Graphics;
     private _background: Sprite;
     private _field: Field;
     private _itemTextures: Texture[] = [
@@ -31,18 +43,10 @@ export class Tile extends Container {
         Game.RES.field.texture,
         Game.RES.fieldHighlighted.texture
     ];
-    private _state: number;
 
     protected pressedAlpha: number = 0.3;
     protected isOver: boolean = true;
     protected isDown: boolean = false;
-
-    public pos = {
-        "x": 0,
-        "y": 0
-    }
-    public type: number;
-    public highlighted: boolean;
 
     private setState(state: any): void {
         this._state = state;
@@ -51,8 +55,19 @@ export class Tile extends Container {
     constructor(field: Field, type: number, pos: number[]) {
         super();
 
+        this._animFilters = new ColorMatrixFilter()
+
         this._background = new Sprite(Game.RES.field.texture);
         this.addChild(this._background);
+
+        this._selectLight = new Graphics();
+        this._selectLight.position.x = 0;
+        this._selectLight.position.y = 0;
+        this._selectLight.lineStyle(0);
+        this._selectLight.beginFill(0xffffff, 0.5);
+        this._selectLight.drawCircle(0, 0, 30);
+        this._selectLight.scale.set(0.8);
+        this._selectLight.filters = [this._animFilters];
 
         this.pos.x = pos[0];
         this.pos.y = pos[1];
@@ -88,7 +103,6 @@ export class Tile extends Container {
                 }
             }
         }.bind(this));
-
         this.item.on("pointerupoutside", function (): void {
             if (this._state == SELECTED) {
                 this.deselect();
@@ -99,10 +113,30 @@ export class Tile extends Container {
         this.addChild(this.item);
     }
 
+    // Анимация выбранного шарика
+    public selectAnimate(count: number): void {
+
+        this._selectLight.scale.x = 1 + Math.sin(count) * 0.05;
+        this._selectLight.scale.y = 1 + Math.cos(count) * 0.05;
+
+        count += 0.07;
+
+        this._animFilters.matrix[1] = Math.sin(count) * 3;
+        this._animFilters.matrix[2] = Math.cos(count);
+        this._animFilters.matrix[3] = Math.cos(count) * 1.5;
+        this._animFilters.matrix[4] = Math.sin(count / 3) * 2;
+        this._animFilters.matrix[5] = Math.sin(count / 2);
+        this._animFilters.matrix[6] = Math.sin(count / 4);
+
+        requestAnimationFrame(this.selectAnimate.bind(this, count));
+    }
+
     // Выбор шарика
     public select(): void {
         if (this._field.selectedTile == null) {
-            TweenMax.fromTo(this.item, 0.3, { alpha: this.item.alpha }, { alpha: this.pressedAlpha });
+            this.item.addChild(this._selectLight);
+            TweenMax.fromTo(this.item.scale, 0.3, { x: 0.8, y: 0.8 }, { x: 0.92, y: 0.92 });
+            requestAnimationFrame(this.selectAnimate.bind(this, 0));
             this._field.selectedTile = this;
             this.setState(SELECTED);
             this._field.highlightNeighbours(this, true);
@@ -111,7 +145,7 @@ export class Tile extends Container {
             if (this.highlighted) {
                 this.swap();
             } else {
-                let temp = !this._field.areNeighbours(this); 
+                let temp = !this._field.areNeighbours(this);
                 this._field.selectedTile.deselect();
                 if (temp) {
                     this.select();
@@ -127,7 +161,9 @@ export class Tile extends Container {
         }
         this._field.unHighlightNeighbours(this);
         this.setState(IDLE);
-        TweenMax.fromTo(this.item, 0.3, { alpha: this.item.alpha }, { alpha: 1 });
+        cancelAnimationFrame(0);
+        this.item.removeChild(this._selectLight);
+        TweenMax.fromTo(this.item.scale, 0.3, { x: 0.92, y: 0.92 }, { x: 0.8, y: 0.8 });
         if (playSound) {
             createjs.Sound.play(Game.UNSELECT_SOUND, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.05);
         }
@@ -161,19 +197,10 @@ export class Tile extends Container {
                 }
             }.bind(this)
         });
-        
+
         TweenMax.to(this.item, 0.75, { x: this.item.x + x1, y: this.item.y + y1 });
         TweenMax.to(this._field.selectedTile.item, 0.75, { x: this.item.x - x1, y: this.item.y - y1 });
     }
-
-    // 3) Убрать выделение с клеток, вместо этого чётко выделять выбранный шар можно начать с этого он хочет чтоб не клетка светилась а шарик ? Да, чтобы не было подсказок ваще принял.  можем функционал подсказок оставть в коде, но просто не юзать. двруг пригодится потом ++
-    // Первый шар можно выбрать всегда, если клик происходит в клетку, куда поставить шар нельзя, то выбор сбрасывается. При первом выбранном шаре можно переключиться на любой другой, который дальше соседней клетки.
-    // Вот тут сложно но ща поясню. Чё он хочет. Корч. 
-    // 1)При нажатии на шар, он выделяется в любом случае, но только он.
-    // 2)При клике в соседнюю клетку, он свапнется только в случае верной комбинации, если !комбинации, то прозойдёт анпик шарик
-    // 3)При клике дальше соседней клетки  i+2 должен происходить репик на кликнутый шар
-    // Как-то так
-    // понял, есть идея как подсвечивать шарики.энивей надо зарезать до 75 мы же скейлим на 0.8 да, знаю. но это ты сам протом сможешь сделать, а это залуп,
 
     // Установка типа шарика
     public setType(t: number, fall: number = 0, mult: number = 1): void {

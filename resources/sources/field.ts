@@ -31,7 +31,6 @@ export class Field extends Container {
         this.mask = this._rectMask;
 
         this._background = new Graphics();
-
         this._background.position.x = 0;
         this._background.position.y = 0;
         this._background.lineStyle(0);
@@ -208,7 +207,7 @@ export class Field extends Container {
         }
         let tl = new TimelineMax({ repeat: 1, repeatDelay: 0.25, onComplete: this.dropTiles.bind(this) });
     }
-    
+
     // Анимация удаления совпадений
     public animateDestroy(matches: any): void {
         if (matches.length > 0) {

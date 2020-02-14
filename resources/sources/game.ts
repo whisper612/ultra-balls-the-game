@@ -31,7 +31,7 @@ export class Game extends Container {
     private _restartButton: MenuButton;
     private _timer: any;
     private _time: number;
-    private _timeToPlay: number = 180;
+    private _timeToPlay: number = 300;
     private _combo: number;
     private _comboText: Text;
     private _score: number;
@@ -180,7 +180,7 @@ export class Game extends Container {
         this._time = 0;
         this.setTimerText();
         this._state = GAMEOVER;
-        // not in combo
+        // Не в комбинации
         if (this._combo == 0) {
             this.endGame();
         }
