@@ -200,9 +200,14 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                 this.switchInteractive(false);
                 for (var i = 0; i < matches.length; i++) {
                     for (var j = 0; j < matches[i].length; j++) {
-                        this.parent.emit("eventComboUp");
-                        TweenMax.to(matches[i][j].item, 0.4, { alpha: 0, rotation: 2.5 });
-                        TweenMax.to(matches[i][j].item.scale, 0.4, { x: 0, y: 0 });
+                        // this.parent.emit("eventComboUp");
+                        // TweenMax.to(matches[i][j].item, 0.4, { alpha: 0, rotation: 2.5 });
+                        // TweenMax.to(matches[i][j].item.scale, 0.4, { x: 0, y: 0 });
+                        if (!matches[i][j].counted) {
+                            this.parent.emit('eventComboUp', matches[i][j].value);
+                            var game = this.parent;
+                            matches[i][j].blow(game.combo);
+                        }
                     }
                 }
                 createjs.Sound.play(game_js_1.Game.DESTROY_SOUND, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 1);
@@ -225,8 +230,8 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                     if (this._tiles[i][j].type == this._tiles[i][j - 1].type && this._tiles[i][j].type != 0) {
                         if (h_temp == null) {
                             h_temp = new Array();
-                            h_temp.push(this._tiles[i][j]);
                             h_temp.push(this._tiles[i][j - 1]);
+                            h_temp.push(this._tiles[i][j]);
                         }
                         else {
                             h_temp.push(this._tiles[i][j]);
@@ -253,8 +258,8 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                     if (this._tiles[i][j].type == this._tiles[i - 1][j].type && this._tiles[i][j].type != 0) {
                         if (v_temp == null) {
                             v_temp = new Array();
-                            v_temp.push(this._tiles[i][j]);
                             v_temp.push(this._tiles[i - 1][j]);
+                            v_temp.push(this._tiles[i][j]);
                         }
                         else {
                             v_temp.push(this._tiles[i][j]);

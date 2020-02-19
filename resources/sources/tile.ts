@@ -2,11 +2,11 @@ import Sprite = PIXI.Sprite;
 import Graphics = PIXI.Graphics;
 import Container = PIXI.Container;
 import Texture = PIXI.Texture;
+import Text = PIXI.Text;
+import TextStyle = PIXI.TextStyle;
 import ColorMatrixFilter = PIXI.filters.ColorMatrixFilter;
 import { Field } from "./field.js";
 import { Game } from "./game.js";
-import { Button } from "./button.js";
-import { filters } from "pixi.js";
 
 let IDLE: number = 0;
 let SELECTED: number = 1;
@@ -15,6 +15,7 @@ declare let TweenMax: any;
 declare let TimelineMax: any;
 
 export class Tile extends Container {
+
     public item: Sprite;
     public type: number;
     public highlighted: boolean;
@@ -22,8 +23,11 @@ export class Tile extends Container {
         "x": 0,
         "y": 0
     }
+    public value: number;
+    public counted: boolean;
 
     private _state: number;
+    private _points: Text;
     private _animFilters: ColorMatrixFilter;
     private _selectLight: Graphics;
     private _background: Sprite;
@@ -69,6 +73,9 @@ export class Tile extends Container {
         this._selectLight.scale.set(0.8);
         this._selectLight.filters = [this._animFilters];
 
+        this.counted = false;
+        this.value = 50;
+
         this.pos.x = pos[0];
         this.pos.y = pos[1];
         this.item = new Sprite();
@@ -79,6 +86,17 @@ export class Tile extends Container {
         this.item.buttonMode = true;
 
         this._field = field;
+
+        this._points = new Text();
+        this._points.style = new TextStyle({
+            fontSize: 68, fontFamily: "Unispace", fill: '#00ccff', align: "center", fontWeight: "600",
+            dropShadow: true,
+            dropShadowDistance: 6,
+            dropShadowBlur: 5
+        });
+
+        this._points.anchor.set(0.5);
+        this._points.position.set(75 / 2, 75 / 2)
 
         this.setState(IDLE);
 
@@ -110,6 +128,8 @@ export class Tile extends Container {
         }.bind(this));
 
         this.setType(type);
+        this.addChild(this._points);
+        this._points.alpha = 0;
         this.addChild(this.item);
     }
 
@@ -169,6 +189,16 @@ export class Tile extends Container {
         }
     }
 
+    // Взрыв шарика
+    public blow (combo: number) {
+        TweenMax.to(this.item, 0.4, {alpha: 0, rotation: 2.5});
+        TweenMax.to(this.item.scale, 0.4, { x: 0, y: 0 });
+        this.counted = true;
+        this._points.text = (this.value * combo).toString();
+        TweenMax.fromTo(this._points, 0.3, { alpha: 0 }, { alpha: 1 });
+        TweenMax.fromTo(this._points.scale, 0.3, { x: 0, y: 0 }, { x: 0.4, y: 0.4 });
+    }
+
     // Смена позиций двух шариков между друг другом
     public swap(): void {
         this._field.switchInteractive(false);
@@ -207,6 +237,12 @@ export class Tile extends Container {
         if (fall > 0) {
             TweenMax.fromTo(this.item, fall, { y: this.item.y - 75 * mult }, { y: this.item.y });
         }
+        if (t == 0 && this.counted) {
+            this.counted = false;
+            TweenMax.fromTo(this._points, 0.75, { alpha: 1 }, { alpha: 0 });
+            TweenMax.fromTo(this._points.scale, 0.75, { x: 0.4, y: 0.4 }, { x: 0, y: 0 });
+        }
+        
         this.type = t;
         this.item.texture = this._itemTextures[this.type];
         this.item.alpha = 1;

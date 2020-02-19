@@ -43,6 +43,10 @@ export class Game extends Container {
         return this._state;
     }
 
+    public get combo(): number {
+        return this._combo;
+    }
+
     constructor(resources: any) {
         super();
         Game.RES = resources;

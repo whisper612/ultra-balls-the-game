@@ -103,6 +103,13 @@ define(["require", "exports", "./field.js", "./switcher.js", "./button.js"], fun
             enumerable: true,
             configurable: true
         });
+        Object.defineProperty(Game.prototype, "combo", {
+            get: function () {
+                return this._combo;
+            },
+            enumerable: true,
+            configurable: true
+        });
         Game.prototype.comboEnd = function () {
             this._combo = 0;
             TweenMax.to(this._comboText, 0.5, { alpha: 0 });
@@ -150,7 +157,7 @@ define(["require", "exports", "./field.js", "./switcher.js", "./button.js"], fun
             this._time = 0;
             this.setTimerText();
             this._state = GAMEOVER;
-            // not in combo
+            // Не в комбинации
             if (this._combo == 0) {
                 this.endGame();
             }

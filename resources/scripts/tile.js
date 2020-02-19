@@ -17,6 +17,8 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
     var Sprite = PIXI.Sprite;
     var Graphics = PIXI.Graphics;
     var Container = PIXI.Container;
+    var Text = PIXI.Text;
+    var TextStyle = PIXI.TextStyle;
     var ColorMatrixFilter = PIXI.filters.ColorMatrixFilter;
     var IDLE = 0;
     var SELECTED = 1;
@@ -57,6 +59,8 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             _this._selectLight.drawCircle(0, 0, 30);
             _this._selectLight.scale.set(0.8);
             _this._selectLight.filters = [_this._animFilters];
+            _this.counted = false;
+            _this.value = 50;
             _this.pos.x = pos[0];
             _this.pos.y = pos[1];
             _this.item = new Sprite();
@@ -66,6 +70,15 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             _this.item.interactive = true;
             _this.item.buttonMode = true;
             _this._field = field;
+            _this._points = new Text();
+            _this._points.style = new TextStyle({
+                fontSize: 68, fontFamily: "Unispace", fill: '#00ccff', align: "center", fontWeight: "600",
+                dropShadow: true,
+                dropShadowDistance: 6,
+                dropShadowBlur: 5
+            });
+            _this._points.anchor.set(0.5);
+            _this._points.position.set(75 / 2, 75 / 2);
             _this.setState(IDLE);
             _this.item.on("pointerover", function () {
                 if (this._state == IDLE) {
@@ -93,6 +106,8 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
                 }
             }.bind(_this));
             _this.setType(type);
+            _this.addChild(_this._points);
+            _this._points.alpha = 0;
             _this.addChild(_this.item);
             return _this;
         }
@@ -101,7 +116,6 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
         };
         // Анимация выбранного шарика
         Tile.prototype.selectAnimate = function (count) {
-            // let count = 0;
             this._selectLight.scale.x = 1 + Math.sin(count) * 0.05;
             this._selectLight.scale.y = 1 + Math.cos(count) * 0.05;
             count += 0.07;
@@ -111,24 +125,11 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             this._animFilters.matrix[4] = Math.sin(count / 3) * 2;
             this._animFilters.matrix[5] = Math.sin(count / 2);
             this._animFilters.matrix[6] = Math.sin(count / 4);
-            // this._animFilters.matrix[4] = Math.sin(count / 3) * 2;
-            // this._animFilters.matrix[5] = Math.sin(count / 2);
-            // this._animFilters.matrix[6] = Math.sin(count / 4); 
-            // this._animFilters.matrix[1] = Math.cos(count) + 16711680;
-            // this._animFilters.matrix[2] = Math.sin(count) / 16761600;
-            // this._animFilters.matrix[3] = Math.cos(count) * 1.5;
-            // this._animFilters.matrix[1] = 1000 + count;
-            // this._animFilters.matrix[2] = 2000 + count;
-            // this._animFilters.matrix[3] = 3000 + count;
-            // this._animFilters.matrix[4] = 4000 + count;
-            // this._animFilters.matrix[5] = 5000 + count;
-            // this._animFilters.matrix[6] = 6000 + count; 
             requestAnimationFrame(this.selectAnimate.bind(this, count));
         };
         // Выбор шарика
         Tile.prototype.select = function () {
             if (this._field.selectedTile == null) {
-                // TweenMax.fromTo(this.item, 0.3, { alpha: this.item.alpha }, { alpha: this.pressedAlpha });
                 this.item.addChild(this._selectLight);
                 TweenMax.fromTo(this.item.scale, 0.3, { x: 0.8, y: 0.8 }, { x: 0.92, y: 0.92 });
                 requestAnimationFrame(this.selectAnimate.bind(this, 0));
@@ -160,12 +161,19 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             this.setState(IDLE);
             cancelAnimationFrame(0);
             this.item.removeChild(this._selectLight);
-            // TweenMax.fromTo(this.item, 0.3, { alpha: this.item.alpha }, { alpha: 1 });
             TweenMax.fromTo(this.item.scale, 0.3, { x: 0.92, y: 0.92 }, { x: 0.8, y: 0.8 });
-            // this.destroy(this._selectLight);
             if (playSound) {
                 createjs.Sound.play(game_js_1.Game.UNSELECT_SOUND, createjs.Sound.INTERRUPT_ANY, 0, 0, 0, 0.05);
             }
+        };
+        // Взрыв шарика
+        Tile.prototype.blow = function (combo) {
+            TweenMax.to(this.item, 0.4, { alpha: 0, rotation: 2.5 });
+            TweenMax.to(this.item.scale, 0.4, { x: 0, y: 0 });
+            this.counted = true;
+            this._points.text = (this.value * combo).toString();
+            TweenMax.fromTo(this._points, 0.3, { alpha: 0 }, { alpha: 1 });
+            TweenMax.fromTo(this._points.scale, 0.3, { x: 0, y: 0 }, { x: 0.4, y: 0.4 });
         };
         // Смена позиций двух шариков между друг другом
         Tile.prototype.swap = function () {
@@ -199,6 +207,11 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             if (mult === void 0) { mult = 1; }
             if (fall > 0) {
                 TweenMax.fromTo(this.item, fall, { y: this.item.y - 75 * mult }, { y: this.item.y });
+            }
+            if (t == 0 && this.counted) {
+                this.counted = false;
+                TweenMax.fromTo(this._points, 0.75, { alpha: 1 }, { alpha: 0 });
+                TweenMax.fromTo(this._points.scale, 0.75, { x: 0.4, y: 0.4 }, { x: 0, y: 0 });
             }
             this.type = t;
             this.item.texture = this._itemTextures[this.type];
