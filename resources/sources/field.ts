@@ -3,14 +3,13 @@ import Graphics = PIXI.Graphics;
 import { Game } from "./game.js";
 import { Tile } from "./tile.js"
 
-declare let TweenMax: any;
 declare let TimelineMax: any;
 
 export class Field extends Container {
 
     public selectedTile: Tile;
 
-    private _tiles: Tile[][]; // _tiles
+    private _tiles: Tile[][];
     private _ores: number = 6;
 
     private _rectMask: Graphics;
@@ -74,6 +73,7 @@ export class Field extends Container {
         this.animateDestroy(this.findMatches());
     }
 
+    // Проверка комбинаций 
     private checkField(): void {
         this.animateDestroy(this.findMatches());
     }
@@ -101,7 +101,7 @@ export class Field extends Container {
     }
 
     // Переключатель воздействия на элементы пользователем
-    public switchInteractive(interactive: boolean): void {
+    public switchInteractive(interactive: boolean) {
         for (let i = 0; i < this._tiles.length; i++) {
             for (let j = 0; j < this._tiles[i].length; j++) {
                 this._tiles[i][j].switchInteractive(interactive);
@@ -109,7 +109,7 @@ export class Field extends Container {
         }
     }
 
-    // Подсветка соседнего тайла, елси онн образует новую комбинацию
+    // Подсветка соседнего тайла, елси он образует новую комбинацию
     public createsNewMatch(s: Tile, n: Tile): boolean {
         let temp = n.type;
         let currentMatches = this.findMatches().length;
@@ -130,8 +130,8 @@ export class Field extends Container {
         return (Math.abs(a.pos.x - b.pos.x) + Math.abs(a.pos.y - b.pos.y)) == 1
     }
 
-    // Подсветка клеток на которые возможно походить
-    public highlightNeighbours(a: Tile, hide: boolean = false): void {
+    // Подсветка клеток на которые возможно походить (на данный момент вырезано)
+    public highlightNeighbours(a: Tile, hide: boolean = false) {
         // Верхний равен верхнему тайлу от текущего и проверки строки над вернхим тайлом, либо null
         let upper = this._tiles[a.pos.x - 1] && this._tiles[a.pos.x - 1][a.pos.y];
         let right = this._tiles[a.pos.x] && this._tiles[a.pos.x][a.pos.y + 1];
@@ -152,9 +152,9 @@ export class Field extends Container {
         }
     }
 
-    //  Отключение подсветки клеток на которые возможно походить
-    public unHighlightNeighbours(a: Tile): void {
-        // Верхний равен верхнему тайлу от текущего и проверки строки над вернхим тайлом, либо null
+    //  Отключение подсветки клеток на которые возможно походить (на данный момент вырезано)
+    public unHighlightNeighbours(a: Tile) {
+        // Upper равен верхнему тайлу от текущего и проверки строки над вернхим тайлом, либо null
         let upper = this._tiles[a.pos.x - 1] && this._tiles[a.pos.x - 1][a.pos.y];
         let right = this._tiles[a.pos.x] && this._tiles[a.pos.x][a.pos.y + 1];
         let bottom = this._tiles[a.pos.x + 1] && this._tiles[a.pos.x + 1][a.pos.y];
@@ -198,7 +198,7 @@ export class Field extends Container {
     }
 
     // Удаление совпадений
-    public destroyMatches(matches: Tile[][]): void {
+    public destroyMatches(matches: Tile[][]) {
         for (let i = 0; i < matches.length; i++) {
             for (let j = 0; j < matches[i].length; j++) {
                 let t = matches[i][j];
@@ -209,14 +209,11 @@ export class Field extends Container {
     }
 
     // Анимация удаления совпадений
-    public animateDestroy(matches: any): void {
+    public animateDestroy(matches: any) {
         if (matches.length > 0) {
             this.switchInteractive(false);
             for (let i = 0; i < matches.length; i++) {
                 for (let j = 0; j < matches[i].length; j++) {
-                    // this.parent.emit("eventComboUp");
-                    // TweenMax.to(matches[i][j].item, 0.4, { alpha: 0, rotation: 2.5 });
-                    // TweenMax.to(matches[i][j].item.scale, 0.4, { x: 0, y: 0 });
                     if (!matches[i][j].counted) {
                         this.parent.emit('eventComboUp', matches[i][j].value);
                         let game = this.parent as Game;

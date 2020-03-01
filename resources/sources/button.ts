@@ -1,4 +1,3 @@
-import Application = PIXI.Application;
 import Sprite = PIXI.Sprite;
 import Container = PIXI.Container;
 import Texture = PIXI.Texture;
@@ -19,7 +18,7 @@ export class Button extends Container {
         super();
 
         this.sprite = new Sprite();
-        this.setAnchor(0.5, 0.5);
+        this.sprite.anchor.set(0.5, 0.5);
         this.sprite.interactive = true;
         this.sprite.buttonMode = true;
 
@@ -72,10 +71,6 @@ export class Button extends Container {
         this.sprite.texture = this.normalTexture;
         this.addChild(this.sprite);
         this.addChild(this.text);
-    }
-
-    public setAnchor(x: number, y: number): void {
-        this.sprite.anchor.set(x, y);
     }
 
     // Функции для кастомизирования кнопок

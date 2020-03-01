@@ -67,6 +67,7 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
             this.parent.emit("eventStartTimer");
             this.animateDestroy(this.findMatches());
         };
+        // Проверка комбинаций 
         Field.prototype.checkField = function () {
             this.animateDestroy(this.findMatches());
         };
@@ -98,7 +99,7 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                 }
             }
         };
-        // Подсветка соседнего тайла, елси онн образует новую комбинацию
+        // Подсветка соседнего тайла, елси он образует новую комбинацию
         Field.prototype.createsNewMatch = function (s, n) {
             var temp = n.type;
             var currentMatches = this.findMatches().length;
@@ -116,7 +117,7 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
             if (b === void 0) { b = this.selectedTile; }
             return (Math.abs(a.pos.x - b.pos.x) + Math.abs(a.pos.y - b.pos.y)) == 1;
         };
-        // Подсветка клеток на которые возможно походить
+        // Подсветка клеток на которые возможно походить (на данный момент вырезано)
         Field.prototype.highlightNeighbours = function (a, hide) {
             if (hide === void 0) { hide = false; }
             // Верхний равен верхнему тайлу от текущего и проверки строки над вернхим тайлом, либо null
@@ -137,9 +138,9 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                 left.highlight(hide);
             }
         };
-        //  Отключение подсветки клеток на которые возможно походить
+        //  Отключение подсветки клеток на которые возможно походить (на данный момент вырезано)
         Field.prototype.unHighlightNeighbours = function (a) {
-            // Верхний равен верхнему тайлу от текущего и проверки строки над вернхим тайлом, либо null
+            // Upper равен верхнему тайлу от текущего и проверки строки над вернхим тайлом, либо null
             var upper = this._tiles[a.pos.x - 1] && this._tiles[a.pos.x - 1][a.pos.y];
             var right = this._tiles[a.pos.x] && this._tiles[a.pos.x][a.pos.y + 1];
             var bottom = this._tiles[a.pos.x + 1] && this._tiles[a.pos.x + 1][a.pos.y];
@@ -200,9 +201,6 @@ define(["require", "exports", "./game.js", "./tile.js"], function (require, expo
                 this.switchInteractive(false);
                 for (var i = 0; i < matches.length; i++) {
                     for (var j = 0; j < matches[i].length; j++) {
-                        // this.parent.emit("eventComboUp");
-                        // TweenMax.to(matches[i][j].item, 0.4, { alpha: 0, rotation: 2.5 });
-                        // TweenMax.to(matches[i][j].item.scale, 0.4, { x: 0, y: 0 });
                         if (!matches[i][j].counted) {
                             this.parent.emit('eventComboUp', matches[i][j].value);
                             var game = this.parent;

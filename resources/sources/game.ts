@@ -1,4 +1,3 @@
-import Application = PIXI.Application;
 import Sprite = PIXI.Sprite;
 import Text = PIXI.Text;
 import TextStyle = PIXI.TextStyle;
@@ -131,15 +130,7 @@ export class Game extends Container {
         });
     }
 
-    private comboEnd(): void {
-        this._combo = 0;
-        TweenMax.to(this._comboText, 0.5, { alpha: 0 });
-
-        if (this._state == GAMEOVER) {
-            this.endGame();
-        }
-    }
-
+    // Обработчик начала комбо
     private comboUp(): void {
         if (this._combo == 0) {
             TweenMax.to(this._comboText, 0.2, { alpha: 1 });
@@ -150,6 +141,16 @@ export class Game extends Container {
         this._comboText.text = "x" + this._combo.toString();
         this._score += 50 * this._combo;
         this._scoreText.text = this._score.toString();
+    }
+
+    // Обработчик конца комбо
+    private comboEnd(): void {
+        this._combo = 0;
+        TweenMax.to(this._comboText, 0.5, { alpha: 0 });
+
+        if (this._state == GAMEOVER) {
+            this.endGame();
+        }
     }
 
     // Обработчик проигрывания фоновой музыки
@@ -190,6 +191,7 @@ export class Game extends Container {
         }
     }
 
+    // Обработчика конца игры
     private endGame(): void {
         this._field.switchInteractive(false);
 

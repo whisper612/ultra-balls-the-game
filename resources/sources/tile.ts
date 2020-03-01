@@ -134,7 +134,7 @@ export class Tile extends Container {
     }
 
     // Анимация выбранного шарика
-    public selectAnimate(count: number): void {
+    public selectAnimate(count: number) {
 
         this._selectLight.scale.x = 1 + Math.sin(count) * 0.05;
         this._selectLight.scale.y = 1 + Math.cos(count) * 0.05;
@@ -175,7 +175,7 @@ export class Tile extends Container {
     }
 
     // Отмена выбора шарика
-    public deselect(playSound: boolean = true): void {
+    public deselect(playSound: boolean = true) {
         if (this._field.selectedTile == this) {
             this._field.selectedTile = null;
         }
@@ -233,7 +233,7 @@ export class Tile extends Container {
     }
 
     // Установка типа шарика
-    public setType(t: number, fall: number = 0, mult: number = 1): void {
+    public setType(t: number, fall: number = 0, mult: number = 1) {
         if (fall > 0) {
             TweenMax.fromTo(this.item, fall, { y: this.item.y - 75 * mult }, { y: this.item.y });
         }
@@ -251,7 +251,7 @@ export class Tile extends Container {
     }
 
     // Подсветка клетки
-    public highlight(hide: boolean = false): void {
+    public highlight(hide: boolean = false) {
         if (this._background.texture == this._fieldTextures[0] && !hide) {
             this._background.texture = this._fieldTextures[1];
         }
@@ -267,7 +267,7 @@ export class Tile extends Container {
     }
 
     // Переключатель воздействия на элементы пользователем
-    public switchInteractive(interactive: boolean): void {
+    public switchInteractive(interactive: boolean) {
         this.item.interactive = interactive;
         this.item.buttonMode = interactive;
     }

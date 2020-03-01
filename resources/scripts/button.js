@@ -28,7 +28,7 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             var _this = _super.call(this) || this;
             _this.pressedAlpha = 0.4;
             _this.sprite = new Sprite();
-            _this.setAnchor(0.5, 0.5);
+            _this.sprite.anchor.set(0.5, 0.5);
             _this.sprite.interactive = true;
             _this.sprite.buttonMode = true;
             _this.normalTexture = _norm;
@@ -74,9 +74,6 @@ define(["require", "exports", "./game.js"], function (require, exports, game_js_
             _this.addChild(_this.text);
             return _this;
         }
-        Button.prototype.setAnchor = function (x, y) {
-            this.sprite.anchor.set(x, y);
-        };
         // Функции для кастомизирования кнопок
         Button.prototype.setNormalStyle = function () {
             this.sprite.texture = this.normalTexture;

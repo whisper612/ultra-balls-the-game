@@ -1,8 +1,6 @@
-import Application = PIXI.Application;
 import Sprite = PIXI.Sprite;
 import Container = PIXI.Container;
 import Texture = PIXI.Texture;
-import { Game } from "./game.js";
 
 export class Switcher extends Container {
 

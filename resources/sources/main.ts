@@ -26,7 +26,6 @@ loader.add("soundSwitcherOff", "/resources/assets/images/buttons/soundButtonOff.
 loader.add("soundSwitcherOn", "/resources/assets/images/buttons/soundButtonOn.png");
 loader.load(setup);
 
-
 let app: Application = new Application({
     antialias: true,
     transparent: true,
@@ -51,7 +50,7 @@ eventListenerResize();
 window.onresize = eventListenerResize;
 
 // Функция вызываемая после подгрузки ресурсов
-function setup(loader: Loader, resources: any): void {
+function setup(loader: Loader, resources: any) {
 
     document.body.appendChild(app.view);
 
